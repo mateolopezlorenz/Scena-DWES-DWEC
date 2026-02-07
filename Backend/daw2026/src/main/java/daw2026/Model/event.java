@@ -1,7 +1,9 @@
 package daw2026.Model;
-
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class event {
+public class Event {
 
     //Atributos
     @Id
@@ -36,7 +39,10 @@ public class event {
     private String category;
 
     @Column(nullable=false)
-    private String schedule;
+    private Date startDate;
+
+    @Column(nullable=false)
+    private Date endDate;
 
     @Column(nullable=false)
     private int capacity;
@@ -44,19 +50,16 @@ public class event {
     @Column(nullable=false)
     private int rooms;
 
-    @Column(nullable=false)
-    private Date create_at;
-
-    @Column(nullable=false)
-    private int like;
+    @Column(name = "created_at", nullable=false)
+    private Date createdAt;
 
     //Quien crea el evento
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private user user;
+    private User user;
 
     // Donde se realiza el evento
     @ManyToOne
     @JoinColumn(name = "local_id", nullable = false)
-    private local local;
+    private Local local;
 }

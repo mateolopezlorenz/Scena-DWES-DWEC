@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class user {
+public class User {
 
     //Atributos
     @Id
@@ -42,5 +42,6 @@ public class user {
 
     // Un usuario crea muchos eventos
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<event> events = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
+
 }
