@@ -11,6 +11,10 @@ public class UserService {
     
     private final UserRepository userRepository;
 
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     //Método para poder listar todos los usuarios.
     public List<user> getAllUsers() {
         return userRepository.findAll();
@@ -25,7 +29,4 @@ public class UserService {
     public Optional<user> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-
-
-
 }
