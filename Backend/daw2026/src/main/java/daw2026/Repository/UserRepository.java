@@ -1,14 +1,13 @@
 package daw2026.Repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import daw2026.Model.user;
+import daw2026.Model.User;
 
-public interface UserRepository extends JpaRepository<user, Long> {
-    Optional<user> findByUsername(String username);
-    Optional<user> findById(Long id);
-    List<user> findAll();
-    
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
+    Optional<User> createUser(User user);
+    Optional<User> updateUser(User user);
 }

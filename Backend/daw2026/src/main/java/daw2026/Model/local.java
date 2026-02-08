@@ -20,10 +20,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class local {
+public class Local {
 
     //Atributos
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,5 +47,5 @@ public class local {
 
     // Un local tiene muchos eventos
     @OneToMany(mappedBy = "local", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<event> events = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
 }

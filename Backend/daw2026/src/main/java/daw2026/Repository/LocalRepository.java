@@ -1,12 +1,14 @@
 package daw2026.Repository;
 
-import java.util.*;
-import org.springframework.data.jpa.repository.JpaRepository;
-import daw2026.Model.local;
+import java.util.Optional;
 
-public interface LocalRepository extends JpaRepository<local, Long> {
-    
-    Optional<local> findByName(String name);
-    Optional<local> findById(Long id);
-    List<local> findAll();
+import daw2026.Model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import daw2026.Model.Local;
+
+public interface LocalRepository extends JpaRepository<Local, Long> {
+    Optional<Local> findByName(String name);
+    Optional<Local> createLocal(User user, Local local);
+    Optional<Local> updateLocal(User user, Local local);
 }
