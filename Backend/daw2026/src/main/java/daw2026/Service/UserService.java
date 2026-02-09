@@ -1,11 +1,12 @@
 package daw2026.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
 
 import daw2026.Model.User;
 import daw2026.Repository.UserRepository;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -16,18 +17,32 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    //Método para poder listar todos los usuarios.
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    //Método para poder listar un usuario por su id.
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
-    //Método para poder listar un usuario por su username.
-    public Optional<User> getUserByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> createUser(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return Optional.empty();
+        }
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(userRepository.save(user));
+    }
+
+    public Optional<User> updateUser(User user) {
+        if (userRepository.findById(user.getId()).isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(userRepository.save(user));
     }
 }
