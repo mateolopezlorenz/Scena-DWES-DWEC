@@ -43,5 +43,4 @@ public class User {
     // Un usuario crea muchos eventos
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events = new ArrayList<>();
-
 }

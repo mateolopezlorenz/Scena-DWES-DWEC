@@ -1,0 +1,16 @@
+services:
+  db:
+    build: .
+    container_name: scena_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: scena_user
+      POSTGRES_PASSWORD: scena_pass
+      POSTGRES_DB: scena_db
+    volumes:
+      - scena_data:/var/lib/postgresql/data
+
+volumes:
+  scena_data:
