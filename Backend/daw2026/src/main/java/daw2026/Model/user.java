@@ -1,6 +1,6 @@
 package daw2026.Model;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +37,17 @@ public class User {
     @Column (nullable=false)
     private String password;
 
-    @Column (nullable=false)
+    @Column
     private Timestamp created_at;
+
+    @Column(nullable = false)
+    private boolean enabled = true;
 
     // Un usuario crea muchos eventos
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events = new ArrayList<>();
+
+    // Un usuario crea muchos locales
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Local> locals = new ArrayList<>();
 }
