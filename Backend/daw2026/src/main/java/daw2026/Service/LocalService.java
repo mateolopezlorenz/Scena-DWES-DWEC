@@ -14,14 +14,13 @@ import daw2026.exception.UnauthorizedException;
 
 @Service
 public class LocalService {
-
     private final LocalRepository localRepository;
     private final UserRepository userRepository;
 
     public LocalService(LocalRepository localRepository, UserRepository userRepository) {
         this.localRepository = localRepository;
         this.userRepository = userRepository;
-    }
+        }
 
     public List<Local> findAll() {
         return localRepository.findAll();

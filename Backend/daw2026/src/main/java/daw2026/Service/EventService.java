@@ -26,12 +26,16 @@ public class EventService {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.localRepository = localRepository;}
+
     public List<Event> findAllOrderByStartDate() {
         return eventRepository.findAllByOrderByStartDateAsc();}
+
     public Optional<Event> findById(Long id) {
         return eventRepository.findById(id);}
+
     public List<Event> findByStartDate(Date startDate) {
         return eventRepository.findByStartDate(startDate);}
+        
     public Optional<Event> findByName(String name) {
         return eventRepository.findByName(name);}
 
