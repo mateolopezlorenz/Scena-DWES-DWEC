@@ -1,68 +1,62 @@
 package daw2026.Controller;
 
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Model.User;
-import daw2026.Repository.UserRepository;
+import daw2026.Service.AuthService;
+import daw2026.exception.UserAlreadyExistsException;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private UserRepository userRepository;
+    private AuthService authService;
 
-    // Herramienta de seguridad para encriptar contraseñas
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    // Registro
+    // Registro de un nuevo usuario
     @PostMapping("/register")
-    public String register(@RequestBody User usuarioNuevo) {
+    public ResponseEntity<?> register(@RequestBody User usuarioNuevo) {
+        try {
+            if (usuarioNuevo.getUsername() == null || usuarioNuevo.getUsername().isEmpty()) {
+                return ResponseEntity.badRequest().body("Error: El username es obligatorio");
+            }
+            if (usuarioNuevo.getEmail() == null || usuarioNuevo.getEmail().isEmpty()) {
+                return ResponseEntity.badRequest().body("Error: El email es obligatorio");
+            }
+            if (usuarioNuevo.getPassword() == null || usuarioNuevo.getPassword().isEmpty()) {
+                return ResponseEntity.badRequest().body("Error: La contraseña es obligatoria");
+            }
 
-        // Validación rápida
-        if (usuarioNuevo.getEmail() == null || usuarioNuevo.getPassword() == null) {
-            return "Fallo: Email y contraseña son obligatorios";
+            Map<String, Object> response = authService.register(usuarioNuevo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al registrar el usuario: " + e.getMessage());
         }
-
-        // Comprobar si ya existe el email en la BBDD
-        if (userRepository.findByEmail(usuarioNuevo.getEmail()).isPresent()) {
-            return "Fallo: El email ya existe";
-        }
-
-        // Encriptar la contraseña
-        String passwordCifrada = passwordEncoder.encode(usuarioNuevo.getPassword());
-        usuarioNuevo.setPassword(passwordCifrada);
-
-        // Guardar en la base de datos
-        userRepository.save(usuarioNuevo);
-
-        return "¡Usuario registrado con éxito!";
     }
 
-    // Login (sin usar token)
+    // Login de un usuario existente
     @PostMapping("/login")
-    public String login(@RequestBody User datosLogin) {
+    public ResponseEntity<?> login(@RequestBody User datosLogin) {
+        try {
+            Map<String, Object> response = authService.login(datosLogin.getUsername(), datosLogin.getPassword());
+            return ResponseEntity.ok(response);
 
-        // Buscar al usuario por su email
-        Optional<User> usuarioEnBD = userRepository.findByEmail(datosLogin.getEmail());
-
-        if (usuarioEnBD.isPresent()) {
-                // Comparar la contraseña que se envía con la encriptada de la BBDD
-            boolean coincide = passwordEncoder.matches(datosLogin.getPassword(), usuarioEnBD.get().getPassword());
-
-            if (coincide) {
-                // Aquí irá el token
-                return "Login Correcto (El usuario es válido, pero falta implementar el Token)";
-            }
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al iniciar sesión: " + e.getMessage());
         }
-
-        return "Fallo: Credenciales incorrectas";
     }
 }

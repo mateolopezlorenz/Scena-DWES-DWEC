@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Model.Local;
+import daw2026.Model.User;
+import daw2026.Repository.UserRepository;
 import daw2026.Service.LocalService;
 import daw2026.exception.LocalAlreadyExistsException;
 import daw2026.exception.ResourceNotFoundException;
@@ -28,6 +32,9 @@ public class LocalController {
 
     @Autowired
     private LocalService localService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Obtener todos los locales
     @GetMapping
@@ -49,9 +56,12 @@ public class LocalController {
 
     // Crear un nuevo local
     @PostMapping
-    public ResponseEntity<?> createLocal(@RequestParam Long userId, @RequestBody Local local) {
+    public ResponseEntity<?> createLocal(@RequestBody Local local,
+                                         @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            Local createdLocal = localService.createLocal(userId, local);
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            Local createdLocal = localService.createLocal(user.getId(), local);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdLocal);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -64,10 +74,14 @@ public class LocalController {
 
     // Actualizar un local
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateLocal(@PathVariable Long id, @RequestParam Long userId, @RequestBody Local local) {
+    public ResponseEntity<?> updateLocal(@PathVariable Long id,
+                                         @RequestBody Local local,
+                                         @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             local.setId(id);
-            Local updatedLocal = localService.updateLocal(userId, local);
+            Local updatedLocal = localService.updateLocal(user.getId(), local);
             return ResponseEntity.ok(updatedLocal);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -82,9 +96,12 @@ public class LocalController {
 
     // Eliminar un local
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLocal(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<?> deleteLocal(@PathVariable Long id,
+                                         @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            localService.deleteLocal(userId, id);
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            localService.deleteLocal(user.getId(), id);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

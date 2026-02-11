@@ -35,6 +35,9 @@ public class EventService {
 
     public List<Event> findByStartDate(Date startDate) {
         return eventRepository.findByStartDate(startDate);}
+
+    public List<Event> findByCategory(String category) {
+        return eventRepository.findByCategory(category);}
         
     public Optional<Event> findByName(String name) {
         return eventRepository.findByName(name);}

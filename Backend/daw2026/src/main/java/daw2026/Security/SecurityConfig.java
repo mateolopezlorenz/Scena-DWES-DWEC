@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -58,7 +59,15 @@ public class SecurityConfig {
 
             //Definimos los endpoints que serán públicos y cuales necesitarán autenticación.
             .authorizeHttpRequests(auth -> auth
+                // Públicas: 
                 .requestMatchers("/api/auth/**", "/error").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events/category/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events/date/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events/search/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/user-events/likes/**").permitAll()
+                // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
 
