@@ -1,12 +1,16 @@
 package daw2026.Controller;
 
-import daw2026.Model.User;
-import daw2026.Repository.UserRepository;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+import daw2026.Model.User;
+import daw2026.Repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -46,7 +50,7 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestBody User datosLogin) {
 
-        // Buscamos al usuario por su email
+        // Buscar al usuario por su email
         Optional<User> usuarioEnBD = userRepository.findByEmail(datosLogin.getEmail());
 
         if (usuarioEnBD.isPresent()) {
@@ -54,7 +58,7 @@ public class AuthController {
             boolean coincide = passwordEncoder.matches(datosLogin.getPassword(), usuarioEnBD.get().getPassword());
 
             if (coincide) {
-                // Aquí iría el Token
+                // Aquí irá el token
                 return "Login Correcto (El usuario es válido, pero falta implementar el Token)";
             }
         }
