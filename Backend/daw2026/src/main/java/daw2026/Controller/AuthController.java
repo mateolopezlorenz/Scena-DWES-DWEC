@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Model.User;
 import daw2026.Service.AuthService;
+import daw2026.Dto.LoginRequest;
 import daw2026.Dto.RegisterRequest;
 
 @RestController
@@ -50,15 +51,25 @@ public class AuthController {
 
     // Login de un usuario existente
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User datosLogin) {
-        try {
-            Map<String, Object> response = authService.login(datosLogin.getUsername(), datosLogin.getPassword());
-            return ResponseEntity.ok(response);
-
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al iniciar sesión: " + e.getMessage());
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    try {
+        if (request.getUsername() == null || request.getUsername().isEmpty()) {
+            return ResponseEntity.badRequest().body("El username es obligatorio");
         }
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body("La contraseña es obligatoria");
+        }
+        Map<String, Object> response = authService.login(
+                request.getUsername(),
+                request.getPassword()
+        );
+
+        return ResponseEntity.ok(response);
+
+    } catch (BadCredentialsException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Credenciales incorrectas");
     }
+}
+
 }
