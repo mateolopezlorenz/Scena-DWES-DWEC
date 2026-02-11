@@ -48,7 +48,7 @@ public class UserEventController {
     }
 
     // Obtener relación entre usuario y evento
-    @GetMapping
+    @GetMapping("/relation")
     public ResponseEntity<?> getUserEvent(@RequestParam Long eventId,
                                           @AuthenticationPrincipal UserDetails userDetails) {
         try {

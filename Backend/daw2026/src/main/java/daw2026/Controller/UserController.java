@@ -21,6 +21,7 @@ import daw2026.Service.UserService;
 import daw2026.exception.ResourceNotFoundException;
 import daw2026.exception.UserAlreadyExistsException;
 
+// Controlador de Usuarios — todas las rutas requieren autenticación JWT.
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -30,7 +31,7 @@ public class UserController {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // Obtener el perfil del usuario autenticado
+    // Devuelve el perfil del usuario logueado.
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -45,8 +46,8 @@ public class UserController {
         }
     }
 
-    // Obtener usuario por ID
-    @GetMapping("/{id}")
+    // Busca un usuario por su ID para ver quien creó un evento etc.
+    @GetMapping("/usuario/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
             Optional<User> user = userService.findById(id);
@@ -60,7 +61,7 @@ public class UserController {
         }
     }
 
-    // Obtener usuario por username
+    // Busca un usuario por su username.
     @GetMapping("/username/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
         try {
@@ -75,7 +76,7 @@ public class UserController {
         }
     }
 
-    // Obtener usuario por email
+    // Busca un usuario por su email.
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         try {
@@ -90,11 +91,10 @@ public class UserController {
         }
     }
 
-    // Crear un nuevo usuario
-    @PostMapping
+    // Crea un usuario (distinto al registro público de /api/auth/register).
+    @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
-            // Encriptar contraseña antes de guardar
             if (user.getPassword() != null) {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }
@@ -107,16 +107,14 @@ public class UserController {
         }
     }
 
-    // Actualizar un usuario
-    @PutMapping("/{id}")
+    // Actualiza un usuario.
+    @PutMapping("/updateUser/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
         try {
             user.setId(id);
-            // Encriptar contraseña si se proporciona
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             } else {
-                // Si no se proporciona contraseña, obtener la actual
                 Optional<User> existingUser = userService.findById(id);
                 if (existingUser.isPresent()) {
                     user.setPassword(existingUser.get().getPassword());

@@ -37,7 +37,7 @@ public class EventController {
     private UserRepository userRepository;
 
     // Listar todos los eventos
-    @GetMapping
+    @GetMapping("/all")
     public List<Event> getAllEvents() {
         return eventService.findAllOrderByStartDate();
     }
@@ -52,6 +52,11 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
     }
+     // Filtrar eventos por fecha de inicio
+    @GetMapping("/startDate/{startDate}")
+    public List<Event> getEventsByStartDate(@PathVariable String startDate) {
+        return eventService.findByStartDate(Date.valueOf(startDate));
+    }
 
     // Filtrar eventos por categoría
     @GetMapping("/category/{category}")
@@ -59,14 +64,8 @@ public class EventController {
         return eventService.findByCategory(category);
     }
 
-    // Filtrar eventos por fecha
-    @GetMapping("/date/{date}")
-    public List<Event> getEventsByDate(@PathVariable String date) {
-        return eventService.findByStartDate(Date.valueOf(date));
-    }
-
     // Buscar evento por nombre
-    @GetMapping("/search/{name}")
+    @GetMapping("/searchEvent/{name}")
     public ResponseEntity<Event> getEventByName(@PathVariable String name) {
         Optional<Event> event = eventService.findByName(name);
         if (event.isPresent()) {
@@ -76,8 +75,8 @@ public class EventController {
         }
     }
 
-    // Crear evento (requiere autenticación)
-    @PostMapping
+    // Crear evento 
+    @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@RequestBody Event nuevoEvento,
                                          @RequestParam Long localId,
                                          @AuthenticationPrincipal UserDetails userDetails) {
@@ -95,8 +94,8 @@ public class EventController {
         }
     }
 
-    // Editar evento (solo el creador)
-    @PutMapping("/{id}")
+    // Editar evento 
+    @PutMapping("/updateEvent/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable Long id,
                                          @RequestBody Event datosNuevos,
                                          @AuthenticationPrincipal UserDetails userDetails) {
@@ -115,8 +114,8 @@ public class EventController {
         }
     }
 
-    // Eliminar evento (solo el creador)
-    @DeleteMapping("/{id}")
+    // Eliminar evento 
+    @DeleteMapping("/deleteEvent/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id,
                                          @AuthenticationPrincipal UserDetails userDetails) {
         try {

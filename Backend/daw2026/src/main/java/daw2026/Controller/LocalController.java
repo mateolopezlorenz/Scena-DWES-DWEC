@@ -37,14 +37,14 @@ public class LocalController {
     private UserRepository userRepository;
 
     // Obtener todos los locales
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Local>> getAllLocals() {
         List<Local> locals = localService.findAll();
         return ResponseEntity.ok(locals);
     }
 
     // Obtener local por nombre
-    @GetMapping("/search")
+    @GetMapping("/searchLocal")
     public ResponseEntity<Local> getLocalByName(@RequestParam String name) {
         Optional<Local> local = localService.findByName(name);
         if (local.isPresent()) {
@@ -55,7 +55,7 @@ public class LocalController {
     }
 
     // Crear un nuevo local
-    @PostMapping
+    @PostMapping("/createLocal")
     public ResponseEntity<?> createLocal(@RequestBody Local local,
                                          @AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -73,7 +73,7 @@ public class LocalController {
     }
 
     // Actualizar un local
-    @PutMapping("/{id}")
+    @PutMapping("/updateLocal/{id}")
     public ResponseEntity<?> updateLocal(@PathVariable Long id,
                                          @RequestBody Local local,
                                          @AuthenticationPrincipal UserDetails userDetails) {
@@ -95,7 +95,7 @@ public class LocalController {
     }
 
     // Eliminar un local
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deleteLocal/{id}")
     public ResponseEntity<?> deleteLocal(@PathVariable Long id,
                                          @AuthenticationPrincipal UserDetails userDetails) {
         try {
