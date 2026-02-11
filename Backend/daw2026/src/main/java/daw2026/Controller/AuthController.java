@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Model.User;
 import daw2026.Service.AuthService;
-import daw2026.exception.UserAlreadyExistsException;
+import daw2026.Dto.RegisterRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,26 +24,28 @@ public class AuthController {
 
     // Registro de un nuevo usuario
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User usuarioNuevo) {
-        try {
-            if (usuarioNuevo.getUsername() == null || usuarioNuevo.getUsername().isEmpty()) {
-                return ResponseEntity.badRequest().body("Error: El username es obligatorio");
-            }
-            if (usuarioNuevo.getEmail() == null || usuarioNuevo.getEmail().isEmpty()) {
-                return ResponseEntity.badRequest().body("Error: El email es obligatorio");
-            }
-            if (usuarioNuevo.getPassword() == null || usuarioNuevo.getPassword().isEmpty()) {
-                return ResponseEntity.badRequest().body("Error: La contraseña es obligatoria");
-            }
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
-            Map<String, Object> response = authService.register(usuarioNuevo);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al registrar el usuario: " + e.getMessage());
+        if (request.getUsername() == null || request.getUsername().isEmpty()) {
+            return ResponseEntity.badRequest().body("Error: El username es obligatorio");
         }
+
+        if (request.getEmail() == null || request.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().body("Error: El email es obligatorio");
+        }
+
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body("Error: La contraseña es obligatoria");
+        }
+
+        User nuevoUsuario = new User();
+        nuevoUsuario.setUsername(request.getUsername());
+        nuevoUsuario.setEmail(request.getEmail());
+        nuevoUsuario.setPassword(request.getPassword());
+
+        Map<String, Object> response = authService.register(nuevoUsuario);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // Login de un usuario existente
