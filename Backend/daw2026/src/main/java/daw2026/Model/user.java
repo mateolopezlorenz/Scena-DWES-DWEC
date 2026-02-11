@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,20 +37,26 @@ public class User {
     @Column (unique = true, nullable=false)
     private String email;
 
+    // La contraseña no se incluye en las respuestas JSON por seguridad.
+    @JsonIgnore
     @Column (nullable=false)
     private String password;
 
     @Column
     private Timestamp created_at;
 
+    // El campo enabled no se incluye en las respuestas JSON.
+    @JsonIgnore
     @Column(nullable = false)
     private boolean enabled = true;
 
-    // Un usuario crea muchos eventos
+    // Un usuario crea muchos eventos (ignoramos el campo 'user' dentro de Event para evitar recursión infinita).
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"user", "local"})
     private List<Event> events = new ArrayList<>();
 
-    // Un usuario crea muchos locales
+    // Un usuario crea muchos locales (ignoramos el campo 'user' dentro de Local para evitar recursión infinita).
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"user", "events"})
     private List<Local> locals = new ArrayList<>();
 }

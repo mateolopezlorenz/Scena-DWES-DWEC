@@ -1,6 +1,8 @@
 package daw2026.Model;
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,13 +51,15 @@ public class Event {
     @Column(name = "created_at", nullable=false)
     private Date createdAt;
 
-    //Quien crea el evento
+    // Quien crea el evento (ignoramos events y locals del User para evitar recursión infinita).
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"events", "locals"})
     private User user;
 
-    // Donde se realiza el evento
+    // Donde se realiza el evento (ignoramos events y user del Local para evitar recursión infinita).
     @ManyToOne
     @JoinColumn(name = "local_id", nullable = false)
+    @JsonIgnoreProperties({"events", "user"})
     private Local local;
 }

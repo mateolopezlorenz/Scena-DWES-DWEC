@@ -3,6 +3,8 @@ package daw2026.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,12 +49,14 @@ public class Local {
     @Column(nullable=false)
     private int rooms;
 
-    // Quien crea el local
+    // Quien crea el local (ignoramos events y locals del User para evitar recursión infinita).
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"events", "locals"})
     private User user;
 
-    // Un local tiene muchos eventos
+    // Un local tiene muchos eventos (ignoramos local y user del Event para evitar recursión infinita).
     @OneToMany(mappedBy = "local", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"local", "user"})
     private List<Event> events = new ArrayList<>();
 }

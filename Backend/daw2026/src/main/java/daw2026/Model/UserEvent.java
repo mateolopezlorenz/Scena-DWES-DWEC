@@ -2,6 +2,8 @@ package daw2026.Model;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,14 +31,16 @@ public class UserEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación con User
+    // Relación con User (ignoramos events y locals del User para evitar recursión infinita).
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"events", "locals"})
     private User user;
 
-    // Relación con Event
+    // Relación con Event (ignoramos user y local del Event para evitar recursión infinita).
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonIgnoreProperties({"user", "local"})
     private Event event;
 
     @Column(nullable = false)
