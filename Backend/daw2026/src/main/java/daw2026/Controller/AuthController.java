@@ -27,6 +27,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
+        //Validamos que los campos no estén vacíos, si lo están, devolvemos código 400.
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
             return ResponseEntity.badRequest().body("Error: El username es obligatorio");
         }
@@ -39,37 +40,43 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: La contraseña es obligatoria");
         }
 
+        //Creamos un nuevo usuario con los datos que se han recibido junto a la petición.
         User nuevoUsuario = new User();
         nuevoUsuario.setUsername(request.getUsername());
         nuevoUsuario.setEmail(request.getEmail());
         nuevoUsuario.setPassword(request.getPassword());
 
+        //Llamamos al servicio de autenticación para registrar al nuevo usuario.
         Map<String, Object> response = authService.register(nuevoUsuario);
 
+        //Damos código 201, el usuario ha sido creado correctamente.
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // Login de un usuario existente
     @PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-    try {
-        if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            return ResponseEntity.badRequest().body("El username es obligatorio");
-        }
-        if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body("La contraseña es obligatoria");
-        }
-        Map<String, Object> response = authService.login(
-                request.getUsername(),
-                request.getPassword()
-        );
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-        return ResponseEntity.ok(response);
+        //Validamos que los campos no estén vacíos, si lo están, devolvemos código 400.
+        try {
+            if (request.getUsername() == null || request.getUsername().isEmpty()) {
+                return ResponseEntity.badRequest().body("El username es obligatorio");
+            }
+            if (request.getPassword() == null || request.getPassword().isEmpty()) {
+                return ResponseEntity.badRequest().body("La contraseña es obligatoria");
+            }
+            Map<String, Object> response = authService.login(
+                    request.getUsername(),
+                    request.getPassword()
+            );
 
-    } catch (BadCredentialsException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Credenciales incorrectas");
+            //Si el login es correcto, devolvemos el token junto a los datos del usuario.
+            return ResponseEntity.ok(response);
+
+            //Si el login es incorrecto, devolvemos código 401.
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Credenciales incorrectas");
+        }
     }
-}
-
 }
