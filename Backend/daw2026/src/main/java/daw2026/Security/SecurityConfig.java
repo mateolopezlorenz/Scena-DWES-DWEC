@@ -26,41 +26,49 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    //Injectamos el filtro de autenticación que tenemos definido en el archivo 'JwtAuthenticationFilter.java'.
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomUserDetailsService customUserDetailsService;
 
+    //Definimos el codificador de contraseñas que utilizaremos para guardar las contraseñas.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    //Exponemos el autenticador para que se pueda inyectar en otros componentes.
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    //Configuración de seguridad en HTTP para definir que endpoints serán públicos y cuales necesitaran autenticación.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+        //Permitimos los CORS a las peticiones que vengan del frontend.
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
 
+            //No guardaremos la sesión del usuario en la zona del servidor, ya que utilizaremos JWT para autenticar los usuarios.
             .sessionManagement(sm ->
                 sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
+            //Definimos los endpoints que serán públicos y cuales necesitarán autenticación.
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/error").permitAll()
                 .anyRequest().authenticated()
             )
 
+            //Pasamos nuestro filtro de autenticación para poder validar el token en cada petición.
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    //Configuración de CORS para permitir las peticiones provinientes del frontend.
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
