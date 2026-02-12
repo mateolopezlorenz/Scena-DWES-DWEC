@@ -50,7 +50,7 @@ public class UserController {
             }
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el perfil");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el perfil" + e.getMessage());
         }
     }
 
@@ -58,14 +58,20 @@ public class UserController {
     @GetMapping("/usuario/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
-            Optional<User> user = userService.findById(id);
-            if (user.isPresent()) {
-                return ResponseEntity.ok(user.get());
+            Optional<User> userOpt = userService.findById(id);
+
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                UserResponse response = new UserResponse();
+                response.setId(user.getId());
+                response.setUsername(user.getUsername());
+                response.setEmail(user.getEmail());
+                return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado con ID: " + id);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el usuario");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el usuario" + e.getMessage());
         }
     }
 
