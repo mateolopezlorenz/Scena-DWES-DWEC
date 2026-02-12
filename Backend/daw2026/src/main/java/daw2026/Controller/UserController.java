@@ -79,14 +79,20 @@ public class UserController {
     @GetMapping("/username/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
         try {
-            Optional<User> user = userService.findByUsername(username);
-            if (user.isPresent()) {
-                return ResponseEntity.ok(user.get());
+            Optional<User> userOpt = userService.findByUsername(username);
+
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                UserResponse response = new UserResponse();
+                response.setId(user.getId());
+                response.setUsername(user.getUsername());
+                response.setEmail(user.getEmail());
+                return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado con username: " + username);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el usuario");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el usuario" + e.getMessage());
         }
     }
 
