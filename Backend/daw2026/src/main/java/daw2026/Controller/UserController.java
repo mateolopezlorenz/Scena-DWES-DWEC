@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import daw2026.Dto.UserResponse;
 import daw2026.Model.User;
 import daw2026.Service.UserService;
 import daw2026.exception.ResourceNotFoundException;
@@ -35,12 +36,19 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            Optional<User> user = userService.findByUsername(userDetails.getUsername());
-            if (user.isPresent()) {
-                return ResponseEntity.ok(user.get());
+            Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
+
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                UserResponse response = new UserResponse();
+                response.setId(user.getId());
+                response.setUsername(user.getUsername());
+                response.setEmail(user.getEmail());
+                return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado" + userDetails.getUsername());
             }
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el perfil");
         }
