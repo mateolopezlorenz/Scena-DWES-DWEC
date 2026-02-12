@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import daw2026.Model.Local;
 import daw2026.Model.User;
@@ -22,10 +23,12 @@ public class LocalService {
         this.userRepository = userRepository;
         }
 
+    @Transactional(readOnly = true)
     public List<Local> findAll() {
         return localRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Optional<Local> findByName(String name) {
         return localRepository.findByName(name);
     }
@@ -53,7 +56,7 @@ public class LocalService {
                 throw new LocalAlreadyExistsException("El local '" + local.getName() + "' ya existe.");
             }
         }
-        
+        local.setUser(existingLocal.getUser());
         return localRepository.save(local);
     }
 

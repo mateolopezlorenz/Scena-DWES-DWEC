@@ -61,11 +61,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Públicas: 
                 .requestMatchers("/api/auth/**", "/error").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/events").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/events/{id}").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/events/category/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/events/date/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/events/search/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/user-events/likes/**").permitAll()
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()

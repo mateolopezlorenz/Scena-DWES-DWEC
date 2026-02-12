@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import daw2026.Model.User;
-import daw2026.Service.AuthService;
 import daw2026.Dto.LoginRequest;
 import daw2026.Dto.RegisterRequest;
+import daw2026.Model.User;
+import daw2026.Service.AuthService;
+import daw2026.exception.UserAlreadyExistsException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,7 +28,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
-        //Validamos que los campos no estén vacíos, si lo están, devolvemos código 400.
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
             return ResponseEntity.badRequest().body("Error: El username es obligatorio");
         }
@@ -47,10 +47,12 @@ public class AuthController {
         nuevoUsuario.setPassword(request.getPassword());
 
         //Llamamos al servicio de autenticación para registrar al nuevo usuario.
-        Map<String, Object> response = authService.register(nuevoUsuario);
-
-        //Damos código 201, el usuario ha sido creado correctamente.
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        try {
+            Map<String, Object> response = authService.register(nuevoUsuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 
     // Login de un usuario existente

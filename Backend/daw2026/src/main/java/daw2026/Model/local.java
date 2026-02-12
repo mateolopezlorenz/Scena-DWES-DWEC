@@ -56,7 +56,7 @@ public class Local {
     private User user;
 
     // Un local tiene muchos eventos (ignoramos local y user del Event para evitar recursión infinita).
-    @OneToMany(mappedBy = "local", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "local", cascade = CascadeType.ALL, orphanRemoval = true, fetch = jakarta.persistence.FetchType.EAGER)
     @JsonIgnoreProperties({"local", "user"})
     private List<Event> events = new ArrayList<>();
 }
