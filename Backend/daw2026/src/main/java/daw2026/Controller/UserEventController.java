@@ -33,13 +33,12 @@ public class UserEventController {
 
     // Dar o no like en un evento 
     @PostMapping("/like")
-    public ResponseEntity<?> toggleLike(@RequestParam Long eventId,
-                                        @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> toggleLike(@RequestParam Long eventId, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             UserEvent userEvent = userEventService.toggleLike(user.getId(), eventId);
-            return ResponseEntity.ok(userEvent);
+            return ResponseEntity.status(HttpStatus.OK).body(userEvent);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -49,14 +48,13 @@ public class UserEventController {
 
     // Obtener relación entre usuario y evento
     @GetMapping("/relation")
-    public ResponseEntity<?> getUserEvent(@RequestParam Long eventId,
-                                          @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> getUserEvent(@RequestParam Long eventId, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             Optional<UserEvent> userEvent = userEventService.findByUserAndEvent(user.getId(), eventId);
             if (userEvent.isPresent()) {
-                return ResponseEntity.ok(userEvent.get());
+                return ResponseEntity.status(HttpStatus.OK).body(userEvent.get());
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Relación usuario-evento no encontrada");
             }
@@ -70,7 +68,7 @@ public class UserEventController {
     public ResponseEntity<?> countLikes(@PathVariable Long eventId) {
         try {
             long likeCount = userEventService.countLikes(eventId);
-            return ResponseEntity.ok("{\"likes\": " + likeCount + "}");
+            return ResponseEntity.status(HttpStatus.OK).body("{\"likes\": " + likeCount + "}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al contar likes");
         }
@@ -83,7 +81,7 @@ public class UserEventController {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             List<UserEvent> likedEvents = userEventService.findLikedByUser(user.getId());
-            return ResponseEntity.ok(likedEvents);
+            return ResponseEntity.status(HttpStatus.OK).body(likedEvents);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
