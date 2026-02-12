@@ -45,11 +45,15 @@ public class EventController {
     // Obtener evento por ID
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        Optional<Event> event = eventService.findById(id);
-        if (event.isPresent()) {
-            return ResponseEntity.ok(event.get());
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            Optional<Event> event = eventService.findById(id);
+            if (event.isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(event.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        } catch (Exception e) { 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); 
         }
     }
      // Filtrar eventos por fecha de inicio
@@ -67,11 +71,15 @@ public class EventController {
     // Buscar evento por nombre
     @GetMapping("/searchEvent/{name}")
     public ResponseEntity<Event> getEventByName(@PathVariable String name) {
+        try {
         Optional<Event> event = eventService.findByName(name);
-        if (event.isPresent()) {
-            return ResponseEntity.ok(event.get());
-        } else {
-            return ResponseEntity.notFound().build();
+                if (event.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.OK).body(event.get());
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                }
+        } catch (Exception e) { 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); 
         }
     }
 
@@ -88,7 +96,7 @@ public class EventController {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear el evento: " + e.getMessage());
         }
@@ -104,7 +112,7 @@ public class EventController {
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             datosNuevos.setId(id);
             Event eventoActualizado = eventService.updateEvent(user.getId(), datosNuevos);
-            return ResponseEntity.ok(eventoActualizado);
+            return ResponseEntity.status(HttpStatus.OK).body(eventoActualizado);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (UnauthorizedException e) {
@@ -122,7 +130,7 @@ public class EventController {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             eventService.deleteEvent(user.getId(), id);
-            return ResponseEntity.ok("Evento eliminado");
+            return ResponseEntity.status(HttpStatus.OK).body("Evento eliminado");
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (UnauthorizedException e) {
