@@ -17,4 +17,6 @@ export class Authservice {
     return this.http.post<{message: string}>('api/auth/login', data);
   }
 
-}
+  eventForm(data: {name: string, description: string, category: string, startDate: string, endDate: string, capacity: number, rooms: number}) {
+    return this.http.post<{message: string}>('api/events/createEvent', data);
+  }
