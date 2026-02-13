@@ -1,7 +1,5 @@
 package daw2026.Controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,25 +59,17 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
         //Validamos que los campos no estén vacíos, si lo están, devolvemos código 400.
+        if (request.getUsername() == null || request.getUsername().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("El username es obligatorio"));
+        }
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("La contraseña es obligatoria"));
+        }
+
         try {
-            if (request.getUsername() == null || request.getUsername().isEmpty()) {
-                return ResponseEntity.badRequest().body("El username es obligatorio");
-            }
-            if (request.getPassword() == null || request.getPassword().isEmpty()) {
-                return ResponseEntity.badRequest().body("La contraseña es obligatoria");
-            }
-            Map<String, Object> response = authService.login(
-                    request.getUsername(),
-                    request.getPassword()
-            );
-
-            //Si el login es correcto, devolvemos el token junto a los datos del usuario.
-            return ResponseEntity.ok(response);
-
-            //Si el login es incorrecto, devolvemos código 401.
+            return ResponseEntity.ok(authService.login(request.getUsername(), request.getPassword()));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new MessageResponse("Credenciales incorrectas"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Credenciales incorrectas."));
         }
     }
 }

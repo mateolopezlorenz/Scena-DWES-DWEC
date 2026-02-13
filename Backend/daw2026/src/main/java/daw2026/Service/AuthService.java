@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import daw2026.Dto.LoginResponse;
 import daw2026.Model.User;
 import daw2026.Repository.UserRepository;
 import daw2026.Security.CustomUserDetailsService;
@@ -54,26 +55,28 @@ public class AuthService {
         return response;
     }
     
-    public Map<String, Object> login(String username, String password) {
+    public LoginResponse login(String username, String password) {
+
         try {
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(username, password)
             );
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Credenciales incorrectas");
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
         String token = jwtTokenUtil.generateToken(userDetails);
+        
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("username", user.getUsername());
-        response.put("email", user.getEmail());
-        response.put("id", user.getId());
 
-        return response;
+        return new LoginResponse(
+                "Login correcto",
+                token,
+                user.getUsername(),
+                user.getEmail(),
+                user.getId()
+        );
     }
 }
