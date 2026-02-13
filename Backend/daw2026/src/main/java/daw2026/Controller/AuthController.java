@@ -79,7 +79,7 @@ public class AuthController {
             //Si el login es incorrecto, devolvemos código 401.
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Credenciales incorrectas");
+                    .body(new MessageResponse("Credenciales incorrectas"));
         }
     }
 }

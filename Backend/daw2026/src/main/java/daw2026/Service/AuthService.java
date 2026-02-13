@@ -25,11 +25,7 @@ public class AuthService {
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomUserDetailsService userDetailsService;
 
-    public AuthService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager,
-                       JwtTokenUtil jwtTokenUtil,
-                       CustomUserDetailsService userDetailsService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, CustomUserDetailsService userDetailsService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -57,6 +53,7 @@ public class AuthService {
 
         return response;
     }
+    
     public Map<String, Object> login(String username, String password) {
         try {
             authenticationManager.authenticate(
