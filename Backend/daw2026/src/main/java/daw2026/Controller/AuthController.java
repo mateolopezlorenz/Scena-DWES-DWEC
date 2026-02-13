@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Dto.LoginRequest;
+import daw2026.Dto.MessageResponse;
 import daw2026.Dto.RegisterRequest;
 import daw2026.Model.User;
 import daw2026.Service.AuthService;
@@ -26,18 +27,18 @@ public class AuthController {
 
     // Registro de un nuevo usuario
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<MessageResponse> register(@RequestBody RegisterRequest request) {
 
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: El username es obligatorio");
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: El username es obligatorio"));
         }
 
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: El email es obligatorio");
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: El email es obligatorio"));
         }
 
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: La contraseña es obligatoria");
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: La contraseña es obligatoria"));
         }
 
         //Creamos un nuevo usuario con los datos que se han recibido junto a la petición.
@@ -48,10 +49,10 @@ public class AuthController {
 
         //Llamamos al servicio de autenticación para registrar al nuevo usuario.
         try {
-            Map<String, Object> response = authService.register(nuevoUsuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            authService.register(nuevoUsuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("Usuario registrado exitosamente"));
         } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(e.getMessage()));
         }
     }
 
