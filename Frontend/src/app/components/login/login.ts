@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { Authservice } from '../../services/authservice';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.scss',
+  styleUrls: ['./login.scss'],
 })
 export class Login {
 
@@ -19,12 +21,12 @@ export class Login {
 
   onSubmit() {
     this.authService.login(this.loginData).subscribe({
-      next: (res) => {
+      next: (res: any) => {
 
         //Damos feedback al usuario de que el login se ha completado de forma exitosa.
         alert(res.message);
       },
-      error: (err) => {
+      error: (err: any) => {
 
         //Damos feedback al usuario de que el login no se ha completado.
         alert('Error en el login: ' + err.error.message);

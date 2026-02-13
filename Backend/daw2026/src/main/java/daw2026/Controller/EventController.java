@@ -85,9 +85,7 @@ public class EventController {
 
     // Crear evento 
     @PostMapping("/createEvent")
-    public ResponseEntity<?> createEvent(@RequestBody Event nuevoEvento,
-                                         @RequestParam Long localId,
-                                         @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> createEvent(@RequestBody Event nuevoEvento, @RequestParam Long localId, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -104,9 +102,7 @@ public class EventController {
 
     // Editar evento 
     @PutMapping("/updateEvent/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable Long id,
-                                         @RequestBody Event datosNuevos,
-                                         @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event datosNuevos, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -124,8 +120,7 @@ public class EventController {
 
     // Eliminar evento 
     @DeleteMapping("/deleteEvent/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable Long id,
-                                         @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));

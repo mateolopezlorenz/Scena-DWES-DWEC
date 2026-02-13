@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { Authservice } from '../../services/authservice';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-event-form',
-  imports: [],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './event-form.html',
   styleUrl: './event-form.scss',
 })
@@ -15,17 +17,17 @@ export class EventForm {
     category: '',
     startDate: '',
     endDate: '',
-    capacity: '',
-    rooms: ''
+    capacity: 0,
+    rooms: 0
   };
-  constructor(private authService: AuthService) {}
+  constructor(private authService: Authservice) {}
 
   onSubmit() {
     this.authService.eventForm(this.eventData).subscribe({
-    next: (res) => {
+    next: (res: any) => {
       alert(res.message);
     },
-    error: (err) => {
+    error: (err: any) => {
       alert('Error al crear el evento: ' + err.message);
       console.error('Error al crear el evento:', err);
     }
