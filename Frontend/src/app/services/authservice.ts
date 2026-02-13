@@ -13,5 +13,8 @@ export class Authservice {
     return this.http.post<{message: string}>('api/auth/register', data);
   }
 
+  login(data: {username: string, password: string}) {
+    return this.http.post<{message: string}>('api/auth/login', data);
+  }
 
 }
