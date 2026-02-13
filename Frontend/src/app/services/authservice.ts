@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { LoginResponse } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -13,11 +14,26 @@ export class Authservice {
     return this.http.post<{message: string}>('api/auth/register', data);
   }
 
+  //Método que envía los datos del login al backend a través de la petición y el endpoint.
   login(data: {username: string, password: string}) {
     return this.http.post<{message: string}>('api/auth/login', data);
   }
 
+  //Método que envía los datos del evento registrado al backend.
   eventForm(data: {name: string, description: string, category: string, startDate: string, endDate: string, capacity: number, rooms: number}) {
     return this.http.post<{message: string}>('api/events/createEvent', data);
+  }
+
+  //Método para poder hacer logout.
+  logout(): void {
+    localStorage.clear();
+  }
+
+  //Método que guarda la sesión del usuario.
+  saveSession(response: LoginResponse): void {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('username', response.username);
+    localStorage.setItem('email', response.email);
+    localStorage.setItem('id', response.id.toString());
   }
 }

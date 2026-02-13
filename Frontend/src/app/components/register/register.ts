@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { Authservice } from '../../services/authservice';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { RegisterRequest } from '../../models';
+import { Router } from '@angular/router'
+
 @Component({
   selector: 'app-register',
   imports: [FormsModule, RouterModule],
@@ -12,27 +15,23 @@ import { RouterModule } from '@angular/router';
 export class Register {
 
   //Datos del registro.
-  registerData = {
+  registerData: RegisterRequest = {
     username: '',
     email: '',
     password: '',
   }
 
 
-  constructor(private authService: Authservice) {}
+  constructor(private authService: Authservice, private router: Router) {}
 
   //Método que envía los datos del registro al servicio de autenticación.
   onSubmit() {
     this.authService.register(this.registerData).subscribe({
-      next: (res : any) => {
-
-        //Mostramos un mensaje al usuario de que el registro se ha completado.
-        alert(res.message);
-
-        //Limpiamos los datos del formulario cuando el registro se ha completado.
-        this.registerData = {username: '', email: '', password: ''}
+      next: () => {
+        //Redirigimos al login.
+        this.router.navigate(["/login"]);
       },
-      error: (err : any) => {
+      error: (err) => {
         
         //Mostramos un mensaje de error al usuario cuando no se ha completado el registro.
         alert('Error en el registro: ' + err.error.message);

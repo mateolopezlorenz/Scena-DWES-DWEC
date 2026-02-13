@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Authservice } from '../../services/authservice';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -18,14 +18,22 @@ export class Login {
     password: ''
   }
 
-  constructor(private authService: Authservice) {}
+  constructor(private authService: Authservice, private router: Router) {}
 
   onSubmit() {
+
+    if (!this.loginData.username || !this.loginData.password) {
+      alert('Todos los datos son obligatorios!');
+      return;
+    }
+
+
     this.authService.login(this.loginData).subscribe({
       next: (res: any) => {
 
-        //Damos feedback al usuario de que el login se ha completado de forma exitosa.
-        alert(res.message);
+        this.authService.saveSession(res);
+
+        this.router.navigate(["/event-list"])
       },
       error: (err: any) => {
 

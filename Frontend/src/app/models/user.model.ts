@@ -9,6 +9,18 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface LoginResponse {
+  message: string;
+  token: string;
+  username: string;
+  email: string;
+  id: number;
+}
+
+export interface RegisterResponse {
+  message: string;
+}
+
 export interface RegisterRequest {
   username: string;
   email: string;
