@@ -33,7 +33,7 @@ export class Login {
 
         this.authService.saveSession(res);
 
-        this.router.navigate(["/event-list"])
+        this.router.navigate(["/home"])
       },
       error: (err: any) => {
 
