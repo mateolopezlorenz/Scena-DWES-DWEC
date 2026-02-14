@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { EventService } from '../../services/eventService';
 import { Events } from '../../models/event.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'event-list',
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.scss'],
 })

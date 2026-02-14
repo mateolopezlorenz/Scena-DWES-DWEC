@@ -1,3 +1,4 @@
-<div class="container">
-    
-</div>
+<nav>
+  <span *ngIf="username">Hola, {{ username }}</span>
+  <button *ngIf="username" (click)="logout()">Logout</button>
+</nav>
