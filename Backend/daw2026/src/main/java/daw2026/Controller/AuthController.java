@@ -1,5 +1,6 @@
 package daw2026.Controller;
 
+import daw2026.Dto.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +68,8 @@ public class AuthController {
         }
 
         try {
-            return ResponseEntity.ok(authService.login(request.getUsername(), request.getPassword()));
+            LoginResponse loginResponse = authService.login(request.getUsername(), request.getPassword());
+            return ResponseEntity.ok(loginResponse);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Credenciales incorrectas."));
         }

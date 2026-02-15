@@ -29,7 +29,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // Devuelve el perfil del usuario logueado.
     @GetMapping("/profile")
@@ -128,6 +128,7 @@ public class UserController {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             } else {
                 Optional<User> existingUser = userService.findById(id);
+
                 if (existingUser.isPresent()) {
                     user.setPassword(existingUser.get().getPassword());
                 }

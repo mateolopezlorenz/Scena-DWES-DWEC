@@ -28,6 +28,16 @@ export class Authservice {
     return this.http.post<{message: string}>('api/events/createEvent', data);
   }
 
+  //Método para obtener el token JWT del localStorage.
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  // Método para comprobar si el usuario está autenticado.
+  isAuthenticated(): boolean {
+    return this.isLoggedIn;
+  }
+
   //Método para poder hacer logout.
   logout(): void {
     localStorage.clear();

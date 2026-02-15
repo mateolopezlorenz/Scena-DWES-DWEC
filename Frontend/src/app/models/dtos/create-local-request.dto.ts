@@ -1,5 +1,4 @@
-export interface Local {
-  id: number;
+export interface CreateLocalRequest {
   name: string;
   latitude: number;
   longitude: number;
