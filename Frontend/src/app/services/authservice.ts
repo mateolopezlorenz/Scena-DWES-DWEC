@@ -6,7 +6,7 @@ import { LoginResponse } from '../models';
   providedIn: 'root',
 })
 export class Authservice {
-  
+
   isLoggedIn: boolean;
 
   constructor(private http: HttpClient) {
@@ -26,6 +26,11 @@ export class Authservice {
   //Método que envía los datos del evento registrado al backend.
   eventForm(data: {name: string, description: string, category: string, startDate: string, endDate: string, capacity: number, rooms: number}) {
     return this.http.post<{message: string}>('api/events/createEvent', data);
+  }
+
+  //Método que envía los datos del local registrado al backend.
+  localForm(data: {name: string, latitude: number, longitude: number, ubication: string, capacity: number, rooms: number}) {
+    return this.http.post<{message: string}>('api/locals/createLocal', data);
   }
 
   //Método para obtener el token JWT del localStorage.

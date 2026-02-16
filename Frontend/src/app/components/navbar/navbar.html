@@ -1,4 +1,10 @@
 <nav>
+  <a routerLink="/register">Crear sesión</a>
+  <a routerLink="/login">Iniciar sesión</a>
+  <a routerLink="/event">Crear evento</a>
+  <a routerLink="/local">Crear local</a>
+  <a routerLink="/event-list">Ver lista de eventos</a>
+
   <span *ngIf="username">Hola, {{ username }}</span>
   <button *ngIf="username" (click)="logout()">Logout</button>
 </nav>

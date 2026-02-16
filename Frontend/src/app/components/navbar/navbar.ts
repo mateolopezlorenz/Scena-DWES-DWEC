@@ -13,14 +13,23 @@ export class Navbar {
 
   username: string | null = null;
 
-  constructor(private router: Router, private authService: Authservice) {}
+  constructor(private router: Router, private authService: Authservice) {
+    this.router.events.subscribe(() => {
+      this.checkUser();
+    });
+  }
 
   ngOnInit() {
+    this.checkUser();
+  }
+
+  checkUser() {
     this.username = localStorage.getItem('username');
   }
 
   logout() {
-  this.authService.logout();
-  this.router.navigate(['/login']);
-}
+    this.authService.logout();
+    this.username = null;
+    this.router.navigate(['/login']);
+  }
 }
