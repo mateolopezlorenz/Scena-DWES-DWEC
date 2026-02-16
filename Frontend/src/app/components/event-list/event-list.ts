@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { EventService } from '../../services/eventService';
-import { Events } from '../../models/event.model';
+import { Events } from '../../models/eventModel';
 import { CommonModule } from '@angular/common';
 
 @Component({
