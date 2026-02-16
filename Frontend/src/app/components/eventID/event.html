@@ -1,0 +1,12 @@
+<div class="event-detail" *ngIf="event">
+  <h2>{{ event.name }}</h2>
+  <p><strong>Descripción:</strong> {{ event.description }}</p>
+  <p><strong>Fecha:</strong> {{ event.date }}</p>
+  <p><strong>Hora:</strong> {{ event.time }}</p>
+  <p><strong>Ubicación:</strong> {{ event.location }}</p>
+  <p><strong>Capacidad:</strong> {{ event.capacity }}</p>
+</div>
+
+<div *ngIf="!event" class="no-event">
+  <p>Cargando evento</p>
+</div>
