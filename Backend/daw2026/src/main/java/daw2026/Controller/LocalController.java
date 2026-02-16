@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import daw2026.Dto.CreateLocalRequest;
+import daw2026.Dto.UpdateLocalRequest;
 import daw2026.Model.Local;
 import daw2026.Model.User;
 import daw2026.Repository.UserRepository;
@@ -65,10 +67,33 @@ public class LocalController {
 
     // Crear un nuevo local
     @PostMapping("/createLocal")
-    public ResponseEntity<?> createLocal(@RequestBody Local local, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> createLocal(@RequestBody CreateLocalRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            // Validación de campos obligatorios
+            if (request.getName() == null || request.getName().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre del local es obligatorio");
+            }
+            if (request.getUbication() == null || request.getUbication().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La ubicación es obligatoria");
+            }
+            if (request.getCapacity() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La capacidad debe ser mayor a 0");
+            }
+            if (request.getRooms() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
+            }
+            
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            
+            Local local = new Local();
+            local.setName(request.getName());
+            local.setLatitude(request.getLatitude());
+            local.setLongitude(request.getLongitude());
+            local.setUbication(request.getUbication());
+            local.setCapacity(request.getCapacity());
+            local.setRooms(request.getRooms());
+            
             Local createdLocal = localService.createLocal(user.getId(), local);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdLocal);
         } catch (ResourceNotFoundException e) {
@@ -82,11 +107,34 @@ public class LocalController {
 
     // Actualizar un local
     @PutMapping("/updateLocal/{id}")
-    public ResponseEntity<?> updateLocal(@PathVariable Long id, @RequestBody Local local, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> updateLocal(@PathVariable Long id, @RequestBody UpdateLocalRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            // Validación de campos
+            if (request.getName() != null && request.getName().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre no puede estar vacío");
+            }
+            if (request.getUbication() != null && request.getUbication().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La ubicación no puede estar vacía");
+            }
+            if (request.getCapacity() != 0 && request.getCapacity() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La capacidad debe ser mayor a 0");
+            }
+            if (request.getRooms() != 0 && request.getRooms() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
+            }
+            
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            
+            Local local = new Local();
             local.setId(id);
+            local.setName(request.getName());
+            local.setLatitude(request.getLatitude());
+            local.setLongitude(request.getLongitude());
+            local.setUbication(request.getUbication());
+            local.setCapacity(request.getCapacity());
+            local.setRooms(request.getRooms());
+            
             Local updatedLocal = localService.updateLocal(user.getId(), local);
             return ResponseEntity.ok(updatedLocal);
         } catch (ResourceNotFoundException e) {

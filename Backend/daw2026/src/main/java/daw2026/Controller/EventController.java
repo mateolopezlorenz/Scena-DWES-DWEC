@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import daw2026.Dto.CreateEventRequest;
+import daw2026.Dto.UpdateEventRequest;
 import daw2026.Model.Event;
 import daw2026.Model.User;
 import daw2026.Repository.UserRepository;
@@ -85,11 +87,44 @@ public class EventController {
 
     // Crear evento 
     @PostMapping("/createEvent")
-    public ResponseEntity<?> createEvent(@RequestBody Event nuevoEvento, @RequestParam Long localId, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> createEvent(@RequestBody CreateEventRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            // Validación de campos obligatorios
+            if (request.getName() == null || request.getName().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre del evento es obligatorio");
+            }
+            if (request.getStartDate() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La fecha de inicio es obligatoria");
+            }
+            if (request.getEndDate() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La fecha de fin es obligatoria");
+            }
+            if (request.getCategory() == null || request.getCategory().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La categoría es obligatoria");
+            }
+            if (request.getCapacity() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La capacidad debe ser mayor a 0");
+            }
+            if (request.getRooms() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
+            }
+            if (request.getLocalId() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El ID del local es obligatorio");
+            }
+            
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-            Event eventoGuardado = eventService.createEvent(user.getId(), localId, nuevoEvento);
+            
+            Event nuevoEvento = new Event();
+            nuevoEvento.setName(request.getName());
+            nuevoEvento.setDescription(request.getDescription());
+            nuevoEvento.setCategory(request.getCategory());
+            nuevoEvento.setStartDate(request.getStartDate());
+            nuevoEvento.setEndDate(request.getEndDate());
+            nuevoEvento.setCapacity(request.getCapacity());
+            nuevoEvento.setRooms(request.getRooms());
+            
+            Event eventoGuardado = eventService.createEvent(user.getId(), request.getLocalId(), nuevoEvento);
             return ResponseEntity.status(HttpStatus.CREATED).body(eventoGuardado);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -102,11 +137,35 @@ public class EventController {
 
     // Editar evento 
     @PutMapping("/updateEvent/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event datosNuevos, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody UpdateEventRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            // Validación de campos
+            if (request.getName() != null && request.getName().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre no puede estar vacío");
+            }
+            if (request.getCategory() != null && request.getCategory().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La categoría no puede estar vacía");
+            }
+            if (request.getCapacity() != 0 && request.getCapacity() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La capacidad debe ser mayor a 0");
+            }
+            if (request.getRooms() != 0 && request.getRooms() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
+            }
+            
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            
+            Event datosNuevos = new Event();
             datosNuevos.setId(id);
+            datosNuevos.setName(request.getName());
+            datosNuevos.setDescription(request.getDescription());
+            datosNuevos.setCategory(request.getCategory());
+            datosNuevos.setStartDate(request.getStartDate());
+            datosNuevos.setEndDate(request.getEndDate());
+            datosNuevos.setCapacity(request.getCapacity());
+            datosNuevos.setRooms(request.getRooms());
+            
             Event eventoActualizado = eventService.updateEvent(user.getId(), datosNuevos);
             return ResponseEntity.status(HttpStatus.OK).body(eventoActualizado);
         } catch (ResourceNotFoundException e) {

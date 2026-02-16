@@ -31,13 +31,25 @@ public class AuthController {
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: El username es obligatorio"));
         }
+        
+        if (request.getUsername().length() < 3) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: El username debe tener al menos 3 caracteres"));
+        }
 
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: El email es obligatorio"));
         }
+        
+        if (!request.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: El email no es válido"));
+        }
 
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: La contraseña es obligatoria"));
+        }
+        
+        if (request.getPassword().length() < 6) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: La contraseña debe tener al menos 6 caracteres"));
         }
 
         //Creamos un nuevo usuario con los datos que se han recibido junto a la petición.

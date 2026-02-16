@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import daw2026.Dto.UpdateUserRequest;
 import daw2026.Dto.UserResponse;
 import daw2026.Model.User;
 import daw2026.Service.UserService;
@@ -118,21 +119,34 @@ public class UserController {
 
     // Actualiza un usuario.
     @PutMapping("/updateUser/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         try {
-            user.setId(id);
-            if (user.getEnabled() == null) {
-                user.setEnabled(true);
+            // Validación de campos
+            if (request.getUsername() != null && request.getUsername().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El username no puede estar vacío");
             }
-            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (request.getEmail() != null && request.getEmail().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El email no puede estar vacío");
+            }
+            
+            User user = new User();
+            user.setId(id);
+            user.setUsername(request.getUsername());
+            user.setEmail(request.getEmail());
+            
+            // Si se proporciona contraseña, encriptarla; si no, mantener la existente
+            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
             } else {
                 Optional<User> existingUser = userService.findById(id);
-
                 if (existingUser.isPresent()) {
                     user.setPassword(existingUser.get().getPassword());
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
                 }
             }
+            
+            user.setEnabled(true);
             User updatedUser = userService.updateUser(user);
             return ResponseEntity.ok(updatedUser);
         } catch (ResourceNotFoundException e) {
