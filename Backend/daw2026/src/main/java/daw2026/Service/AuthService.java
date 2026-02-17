@@ -55,20 +55,20 @@ public class AuthService {
         return response;
     }
     
-    public LoginResponse login(String username, String password) {
+    public LoginResponse login(String email, String password) {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(email, password)
             );
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Credenciales incorrectas");
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         String token = jwtTokenUtil.generateToken(userDetails);
         
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         return new LoginResponse(

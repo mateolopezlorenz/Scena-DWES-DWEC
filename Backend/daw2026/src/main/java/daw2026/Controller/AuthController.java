@@ -70,17 +70,16 @@ public class AuthController {
     // Login de un usuario existente
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-
-        //Validamos que los campos no estén vacíos, si lo están, devolvemos código 400.
-        if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("El username es obligatorio"));
+        // Validamos que los campos no estén vacíos, si lo están, devolvemos código 400.
+        if (request.getEmail() == null || request.getEmail().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("El email es obligatorio"));
         }
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("La contraseña es obligatoria"));
         }
 
         try {
-            LoginResponse loginResponse = authService.login(request.getUsername(), request.getPassword());
+            LoginResponse loginResponse = authService.login(request.getEmail(), request.getPassword());
             return ResponseEntity.ok(loginResponse);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Credenciales incorrectas."));

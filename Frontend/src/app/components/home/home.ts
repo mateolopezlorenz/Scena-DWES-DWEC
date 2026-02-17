@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Authservice } from '../../services/authservice';
@@ -5,7 +6,7 @@ import { Authservice } from '../../services/authservice';
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './home.html',
   styleUrls: ['./home.scss'],
 })

@@ -14,7 +14,7 @@ export class Login {
 
   //Datos que introduce el usuario en el formulario de login.
   loginData = {
-    username: '',
+    email: '',
     password: ''
   }
 
@@ -22,7 +22,7 @@ export class Login {
 
   onSubmit() {
 
-    if (!this.loginData.username || !this.loginData.password) {
+    if (!this.loginData.email || !this.loginData.password) {
       alert('Todos los datos son obligatorios!');
       return;
     }

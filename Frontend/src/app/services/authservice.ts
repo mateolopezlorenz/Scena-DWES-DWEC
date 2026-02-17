@@ -19,7 +19,7 @@ export class Authservice {
   }
 
   //Método que envía los datos del login al backend a través de la petición y el endpoint.
-  login(data: {username: string, password: string}) {
+  login(data: {email: string, password: string}) {
     return this.http.post<{message: string}>('api/auth/login', data);
   }
 
