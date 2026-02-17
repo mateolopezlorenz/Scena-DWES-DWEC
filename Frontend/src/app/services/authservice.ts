@@ -8,6 +8,7 @@ import { LoginResponse } from '../models';
 export class Authservice {
 
   isLoggedIn: boolean;
+  private url = 'http://localhost:8080/api/auth';
 
   constructor(private http: HttpClient) {
     this.isLoggedIn = !!localStorage.getItem('token');
@@ -15,17 +16,17 @@ export class Authservice {
 
   //Método que envía los datos del registro al backend a través de la petición y el endpoint.
   register(data: {username: string, email: string, password: string}) {
-    return this.http.post<{message: string}>('api/auth/register', data);
+    return this.http.post<{message: string}>(`${this.url}/register`, data);
   }
 
   //Método que envía los datos del login al backend a través de la petición y el endpoint.
   login(data: {email: string, password: string}) {
-    return this.http.post<{message: string}>('api/auth/login', data);
+    return this.http.post<{message: string}>(`${this.url}/login`, data);
   }
 
   //Método que envía los datos del evento registrado al backend.
   eventForm(data: {name: string, description: string, category: string, startDate: string, endDate: string, capacity: number, rooms: number}) {
-    return this.http.post<{message: string}>('api/events/createEvent', data);
+    return this.http.post<{message: string}>('http://localhost:8080/api/events/createEvent', data);
   }
 
   //Método que envía los datos del local registrado al backend.

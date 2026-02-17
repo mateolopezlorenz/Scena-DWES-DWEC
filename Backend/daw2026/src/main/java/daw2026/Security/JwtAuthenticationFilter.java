@@ -30,6 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain chain) 
             throws ServletException, IOException {
         
+        // Ignorar peticiones a endpoints públicos
+        String requestPath = request.getRequestURI();
+        if (requestPath.startsWith("/api/auth/") || requestPath.equals("/error")) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
         //Obtenemos el token del header 'Authorization'.
         final String authorizationHeader = request.getHeader("Authorization");
         

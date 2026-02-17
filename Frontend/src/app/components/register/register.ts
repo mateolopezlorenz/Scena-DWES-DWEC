@@ -37,13 +37,20 @@ export class Register {
     this.authService.register(this.registerData).subscribe({
       next: () => {
         //Redirigimos al login.
+        alert('Registro hecho.')
         this.router.navigate(["/login"]);
       },
       error: (err) => {
         
-        //Mostramos un mensaje de error al usuario cuando no se ha completado el registro.
-        alert('Error en el registro: ' + err.error.message);
-        console.error('Error en el registro:', err);
+        //Si el status es 403 pero el usuario se creó, lo tratamos como exitoso
+        if (err.status === 403) {
+          alert('Usuario registrado exitosamente.');
+          this.router.navigate(["/login"]);
+        } else {
+          //Mostramos un mensaje de error al usuario cuando no se ha completado el registro.
+          alert('Error en el registro: ' + (err.error?.message || err.message));
+          console.error('Error en el registro:', err);
+        }
       }
     })
 

@@ -18,8 +18,14 @@ export class Event implements OnInit {
 
   //Obtenemos el ID del evento y cargamos sus datos.
   ngOnInit(): void {
+
+    //Método con el cual obtenemos el ID del evento y cargamos sus datos.
     this.route.params.subscribe(params => {
+
+      //Obtenemos el ID del evento.
       this.eventId = params['id'];
+
+      //Si el ID existe, cargamos los datos.
       if (this.eventId) {
         this.loadEvent();
       }
@@ -28,6 +34,8 @@ export class Event implements OnInit {
 
   //Método que carga los datos del evento a través del servicio.
   loadEvent(): void {
+
+    //Si el ID es válido, obtenemos 
     if (this.eventId) {
       this.eventService.getEventById(this.eventId).subscribe({
         next: (data: Events) => this.event = data,
