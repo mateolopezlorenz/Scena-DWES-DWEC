@@ -1,0 +1,36 @@
+<div class="filters-container">
+  <h2>Filtrar eventos</h2>
+
+  <div class="filter-group">
+    <label>Buscar por nombre:</label>
+    <input [(ngModel)]="name" placeholder="Nombre del evento">
+    <button (click)="searchByName()">Buscar</button>
+  </div>
+
+  <div class="filter-group">
+    <label>Buscar por fecha de inicio:</label>
+    <input [(ngModel)]="startDate" type="date">
+    <button (click)="searchByStartDate()">Buscar</button>
+  </div>
+
+  <div class="filter-group">
+    <label>Buscar por categoría:</label>
+    <input [(ngModel)]="category" placeholder="Categoría">
+    <button (click)="searchByCategory()">Buscar</button>
+  </div>
+
+  <button (click)="clearResults()">Limpiar resultados</button>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="events.length">
+    <h3>Resultados:</h3>
+    <div *ngFor="let event of events" class="event-card">
+      <h4>{{ event.name }}</h4>
+      <p>{{ event.description }}</p>
+      <p>Fecha inicio: {{ event.startDate }}</p>
+      <p>Categoría: {{ event.category }}</p>
+      <p>Local ID: {{ event.localId }}</p>
+    </div>
+  </div>
+</div>

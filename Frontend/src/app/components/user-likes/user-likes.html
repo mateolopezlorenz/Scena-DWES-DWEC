@@ -1,0 +1,13 @@
+<div class="likes-container">
+  <h2>Mis eventos con MG</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="likedEvents.length">
+    <div *ngFor="let event of likedEvents" class="event-card">
+      <h4>{{ event.name }}</h4>
+      <p>{{ event.description }}</p>
+      <p>Fecha inicio: {{ event.startDate }}</p>
+      <p>Categoría: {{ event.category }}</p>
+      <p>Local ID: {{ event.localId }}</p>
+    </div>
+  </div>
+</div>

@@ -3,9 +3,10 @@
   <button *ngIf="username" (click)="logout()">Logout</button>
   <br>
   
-  <a routerLink="/register">Crear sesión</a>
-  <a routerLink="/login">Iniciar sesión</a>
-  <a routerLink="/event">Crear evento</a>
-  <a routerLink="/local">Crear local</a>
+  <a *ngIf="!username" routerLink="/register">Crear sesión</a>
+  <a *ngIf="!username" routerLink="/login">Iniciar sesión</a>
+  <a *ngIf="username" routerLink="/event">Crear evento</a>
+  <a *ngIf="username" routerLink="/local">Crear local</a>
   <a routerLink="/event-list">Ver lista de eventos</a>
+  <a *ngIf="username" routerLink="/user-likes">Ver mis MG</a>
 </nav>
