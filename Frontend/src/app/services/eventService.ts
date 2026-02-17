@@ -19,4 +19,17 @@ export class EventService {
   getEventById(id: number): Observable<Events> {
     return this.http.get<Events>(`${this.url}/${id}`);
   }
+
+  getEventByName(name: string): Observable<Events> {
+    return this.http.get<Events>(`${this.url}/searchEvent/${name}`);
+  }
+
+ 
+  getEventsByStartDate(startDate: string): Observable<Events[]> {
+    return this.http.get<Events[]>(`${this.url}/startDate/${startDate}`);
+  }
+
+  getEventsByCategory(category: string): Observable<Events[]> {
+    return this.http.get<Events[]>(`${this.url}/category/${category}`);
+  }
 }
