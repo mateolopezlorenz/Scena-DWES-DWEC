@@ -1,19 +1,28 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { Authservice } from '../services/authservice';
+import { Injectable, Injector } from '@angular/core';
+import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor,} from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-// Utilizam el interceptor HTTP per afegir el token JWT a totes les sol·licitats 
-// i així el servidor pot validar que l'usuari està autenticat
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const auth = inject(Authservice) as Authservice;
-  const token = auth.getToken();
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
 
-  // Si existeix un token, l'afegeix a la capçalera Authorization
-  if (token) {
-    req = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
-    });
+  constructor(private injector: Injector) {}
+
+  //Método con el que interceptamos las peticiones para agregar el token de autenticación.
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {    
+    const token = localStorage.getItem('token');
+    console.log('Token disponible:', !!token);
+    
+    if (token) {
+      req = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('Headers after clone:', req.headers.keys());
+    }
+    
+    return next.handle(req);
   }
+}
 
-  return next(req);
-};

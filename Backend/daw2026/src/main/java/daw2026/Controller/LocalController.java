@@ -83,7 +83,7 @@ public class LocalController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
             }
             
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             
             Local local = new Local();

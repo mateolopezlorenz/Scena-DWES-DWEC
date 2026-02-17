@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Authservice } from '../../services/authservice';
+import { LocalService } from '../../services/local-service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -12,24 +13,26 @@ import { FormsModule } from '@angular/forms';
 export class LocalForm {
 
   localData = {
+    id: 0,
     name: '',
     latitude: 0,
     longitude: 0,
     ubication: '',
-    capacity: 0,
-    rooms: 0
+    capacity: 1,
+    rooms: 1
   };
 
-  constructor(private authService: Authservice) {}
+  constructor(private authService: Authservice, private localService: LocalService ) {}
 
-  onSubmit() {
-    this.authService.localForm(this.localData).subscribe({
+  onSubmit() {    
+    this.localService.crearLocal(this.localData).subscribe({
       next: (res: any) => {
+        console.log('Local creado correctamente', res);
         alert('Local creado con éxito');
       },
       error: (err: any) => {
+        console.error('Error al crear el local', err);
         alert('Error al crear el local: ' + (err.error?.message || err.message));
-        console.error('Error al crear el local:', err);
       }
     });
   }
