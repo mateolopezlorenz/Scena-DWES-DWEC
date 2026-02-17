@@ -5,6 +5,7 @@ import { EventForm } from './components/event-form/event-form';
 import { Home } from './components/home/home';
 import { EventList } from './components/event-list/event-list';
 import { LocalForm } from './components/local-form/local-form';
+import { Event } from './components/eventID/event';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
