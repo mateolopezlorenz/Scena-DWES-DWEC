@@ -56,10 +56,24 @@ export class MapView implements AfterViewInit {
   }
 
   private initMap(): void {
-    // 1. Configuración del mapa (Mallorca)
-    this.map = L.map('map').setView([39.695, 3.018], 10);
 
-    // 2. Capa de tiles (OpenStreetMap)
+    // 1. Definir los límites geográficos de Mallorca (una "caja" alrededor de la isla)
+    const southWest = L.latLng(39.20, 2.25);
+    const northEast = L.latLng(40.05, 3.50);
+
+    // Crear el objeto de límites
+    const mallorcaBounds = L.latLngBounds(southWest, northEast);
+
+    // 2. Inicializamos el mapa pasando un segundo argumento con las opciones
+    this.map = L.map('map', {
+      center: [39.695, 3.018], // Dónde empieza centrado
+      zoom: 10,                  // Zoom inicial
+      minZoom: 9.8,                // Evita hacer demasiado zoom out
+      maxZoom: 16,               // Evita hacer zoom in extremo a nivel de calle
+      maxBounds: mallorcaBounds, // Impide navegar fuera de la caja definida
+      maxBoundsViscosity: 1.0    // Define qué tan "pegajosos" son los bordes
+    });
+    // 2. Capa de tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
       attribution: '© OpenStreetMap contributors'
