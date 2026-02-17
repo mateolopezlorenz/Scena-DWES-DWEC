@@ -1,3 +1,6 @@
+import { User } from './userModel';
+import { Local } from './localModel';
+
 export interface Events {
   id: number;
   name: string;
@@ -7,7 +10,7 @@ export interface Events {
   endDate: string;
   capacity: number;
   rooms: number;
-  userId: number;
-  localId: number;
+  user: User;
+  local: Local;
 }
 

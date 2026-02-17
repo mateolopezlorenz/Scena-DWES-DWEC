@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import daw2026.Model.Event;
 import daw2026.Model.Local;
@@ -68,6 +69,7 @@ public class EventService {
         event.setCreatedAt(existingEvent.getCreatedAt());
         return eventRepository.save(event);}
 
+    @Transactional
     public void deleteEvent(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
@@ -75,3 +77,5 @@ public class EventService {
             throw new UnauthorizedException("No tienes permisos para eliminar este evento");}
         eventRepository.deleteById(eventId);}
 }
+
+

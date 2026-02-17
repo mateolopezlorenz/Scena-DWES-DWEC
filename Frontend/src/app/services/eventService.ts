@@ -52,4 +52,28 @@ export class EventService {
   getEventsByCategory(category: string): Observable<Events[]> {
     return this.http.get<Events[]>(`${this.url}/category/${category}`);
   }
+
+  //Método para actualizar un evento.
+  updateEvent(id: number, data: any): Observable<Events> {
+    const token = localStorage.getItem('token');
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` })
+    };
+
+    return this.http.put<Events>(`${this.url}/updateEvent/${id}`, data, { headers });
+  }
+
+  //Método para eliminar un evento.
+  deleteEvent(id: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` })
+    };
+
+    return this.http.delete(`${this.url}/deleteEvent/${id}`, { headers, responseType: 'text' });
+  }
 }
