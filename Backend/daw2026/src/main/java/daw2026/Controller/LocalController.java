@@ -65,6 +65,21 @@ public class LocalController {
         }    
     }
 
+    // Obtener locales por usuario
+    @GetMapping("/user")
+    public ResponseEntity<List<Local>> getLocalsByUser(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            User user = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            List<Local> locals = localService.findByUserId(user.getId());
+            return ResponseEntity.status(HttpStatus.OK).body(locals);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     // Crear un nuevo local
     @PostMapping("/createLocal")
     public ResponseEntity<?> createLocal(@RequestBody CreateLocalRequest request, @AuthenticationPrincipal UserDetails userDetails) {

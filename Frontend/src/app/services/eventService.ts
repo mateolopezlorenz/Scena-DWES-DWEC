@@ -12,6 +12,17 @@ export class EventService {
 
   constructor(private http: HttpClient) {}
 
+  createEvent(data: any): Observable<Events> {
+    const token = localStorage.getItem('token');
+    
+    //Construímos los headers de la petición.
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` })
+    };
+    return this.http.post<Events>(`${this.url}/createEvent`, data, { headers });
+  }
+
   getAllEvents(): Observable<Events[]> {
     return this.http.get<Events[]>(this.url);
   }

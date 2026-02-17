@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
 import { EventService } from '../../services/eventService';
-import { Events } from '../../models/event.model';
+import { Events } from '../../models';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'event-filters',
+  standalone: true,
+  imports: [FormsModule, CommonModule],
   templateUrl: './event-filters.html',
   styleUrls: ['./event-filters.scss']
 })

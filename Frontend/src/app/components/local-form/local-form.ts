@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Authservice } from '../../services/authservice';
-import { LocalService } from '../../services/local-service';
+import { LocalService } from '../../services/localService';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class LocalForm {
 
+  //Datos del local que se enviarán al backend.
   localData = {
     id: 0,
     name: '',
@@ -24,6 +25,7 @@ export class LocalForm {
 
   constructor(private authService: Authservice, private localService: LocalService ) {}
 
+  //Método que envía los datos registrados para poder crear el local.
   onSubmit() {    
     this.localService.crearLocal(this.localData).subscribe({
       next: (res: any) => {

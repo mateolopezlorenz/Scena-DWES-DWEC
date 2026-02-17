@@ -4,24 +4,38 @@
     <label for="name">Nombre del Evento:</label>
     <input type="text" id="name" name="name" [(ngModel)]="eventData.name" required>
     <br>
+
     <label for="description">Descripción:</label>
     <input type="text" id="description" name="description" [(ngModel)]="eventData.description" required>
     <br>
+
     <label for="category">Categoría:</label>
     <input type="text" id="category" name="category" [(ngModel)]="eventData.category" required>
     <br>
+
     <label for="startDate">Fecha de inicio :</label>
     <input type="date" id="startDate" name="startDate" [(ngModel)]="eventData.startDate" required>
     <br>
+
     <label for="endDate">Fecha de fin:</label>
     <input type="date" id="endDate" name="endDate" [(ngModel)]="eventData.endDate" required>
     <br>
+
     <label for="capacity">Capacidad:</label>
     <input type="number" id="capacity" name="capacity" [(ngModel)]="eventData.capacity" required>
     <br>
+
     <label for="rooms">Salas:</label>
     <input type="number" id="rooms" name="rooms" [(ngModel)]="eventData.rooms" required>
     <br>
+
+    <label for="localId">Local:</label>
+    <select id="localId" name="localId" [(ngModel)]="eventData.localId" required>
+      <option [value]="null">Selecciona un local</option>
+      <option *ngFor="let local of locals" [value]="local.id">{{ local.name }} - {{ local.ubication }}</option>
+    </select>
+    <br>
+
     <button type="submit" [disabled]="!eventForm.form.valid">Crear Evento</button>
   </form>
 

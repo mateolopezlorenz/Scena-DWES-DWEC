@@ -111,7 +111,7 @@ public class EventController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El ID del local es obligatorio");
             }
             
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             
             Event nuevoEvento = new Event();
@@ -152,7 +152,7 @@ public class EventController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
             }
             
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             
             Event datosNuevos = new Event();
@@ -180,7 +180,7 @@ public class EventController {
     @DeleteMapping("/deleteEvent/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             eventService.deleteEvent(user.getId(), id);
             return ResponseEntity.status(HttpStatus.OK).body("Evento eliminado");

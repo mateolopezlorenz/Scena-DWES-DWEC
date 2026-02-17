@@ -33,6 +33,11 @@ public class LocalService {
         return localRepository.findByName(name);
     }
 
+    @Transactional(readOnly = true)
+    public List<Local> findByUserId(Long userId) {
+        return localRepository.findByUserId(userId);
+    }
+
     
     public Local createLocal(Long userId, Local local) {
         User user = userRepository.findById(userId)
