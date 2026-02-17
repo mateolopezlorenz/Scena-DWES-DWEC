@@ -19,6 +19,7 @@ export class Register {
     username: '',
     email: '',
     password: '',
+    password2: ''
   }
 
 
@@ -26,6 +27,13 @@ export class Register {
 
   //Método que envía los datos del registro al servicio de autenticación.
   onSubmit() {
+
+    //Validamos si las contraseñas coincide, si no es así, mostramos un mensaje de error al usuario.
+    if (this.registerData.password !== this.registerData.password2) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+
     this.authService.register(this.registerData).subscribe({
       next: () => {
         //Redirigimos al login.
