@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UserEventService } from '../../services/userEventService';
 import { Events } from '../../models/eventModel';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'user-likes',
   templateUrl: './user-likes.html',
+  imports: [CommonModule]
 })
 export class UserLikesComponent implements OnInit {
   likedEvents: Events[] = [];
