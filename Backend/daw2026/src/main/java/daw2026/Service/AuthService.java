@@ -44,10 +44,9 @@ public class AuthService {
         nuevoUsuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
         nuevoUsuario.setCreated_at(new Timestamp(System.currentTimeMillis()));
         User usuarioGuardado = userRepository.save(nuevoUsuario);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(usuarioGuardado.getUsername());
-        String token = jwtTokenUtil.generateToken(userDetails);
+    
         Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
+        response.put("message", "Usuario registrado exitosamente");
         response.put("username", usuarioGuardado.getUsername());
         response.put("email", usuarioGuardado.getEmail());
         response.put("id", usuarioGuardado.getId());
