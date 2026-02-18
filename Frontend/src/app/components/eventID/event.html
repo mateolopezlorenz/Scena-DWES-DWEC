@@ -76,6 +76,16 @@
     </div>
 
     <div>
+      <button type="button" (click)="showEditMapSelector = !showEditMapSelector" style="margin: 10px 0;">
+        {{ showEditMapSelector ? 'Ocultar Mapa' : 'Seleccionar en Mapa' }}
+      </button>
+    </div>
+
+    <div *ngIf="showEditMapSelector" style="width:100%;height:400px;margin:15px 0;border:1px solid #ccc;">
+      <app-map-view (coordinatesSelected)="onEditCoordinatesSelected($event)"></app-map-view>
+    </div>
+
+    <div>
       <label>Dirección: </label>
       <input type="text" [(ngModel)]="editedEvent.address" name="address" required/>
     </div>

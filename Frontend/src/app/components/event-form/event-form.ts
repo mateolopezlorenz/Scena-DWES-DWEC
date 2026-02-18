@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { EventService } from '../../services/eventService';
 import { MapView } from '../map-view/map-view';
 
@@ -27,19 +28,20 @@ export class EventForm {
     address: ''
   };
 
-  constructor(private eventService: EventService) {}
+  constructor(private eventService: EventService, private router: Router) {}
 
   //Método que envía los datos registrados para poder crear el evento.
   onSubmit() {
     this.eventService.createEvent(this.eventData).subscribe({
-    next: (res: any) => {
-      alert('Evento creado correctamente: ' + res.name);
-    },
-    error: (err: any) => {
-      alert('Error al crear el evento: ' + err.message);
-      console.error('Error al crear el evento:', err);
-    }
-  });   
+      next: (res: any) => {
+        alert('Evento creado correctamente: ' + res.name);
+        this.router.navigate(['/event-list']);
+      },
+      error: (err: any) => {
+        alert('Error al crear el evento: ' + err.message);
+        console.error('Error al crear el evento:', err);
+      }
+    });
   }
 
   //Método para capturar coordenadas del mapa

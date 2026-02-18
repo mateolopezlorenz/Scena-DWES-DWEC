@@ -1,9 +1,11 @@
 package daw2026.Controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,8 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import daw2026.Dto.CreateEventRequest;
 import daw2026.Dto.LikeCountResponse;
 import daw2026.Dto.UpdateEventRequest;
@@ -41,27 +43,20 @@ public class EventController {
 
     @Autowired
     private UserRepository userRepository;
-
-    /**
-     * GET /api/events
-     * Listar todos los eventos (público)
-     * Retorna los eventos ordenados por fecha de inicio (próximos primero)
-     * Incluye información del usuario creador
-     */
+     
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
+    public ResponseEntity<List<Event>> getAllEvents(
+            @RequestParam(required = false) Category category,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) String search) {
         try {
-            List<Event> eventos = eventService.findAllOrderByStartDate();
+            List<Event> eventos = eventService.findFiltered(category, date, search);
             return ResponseEntity.ok(eventos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    /**
-     * GET /api/events/{id}
-     * Obtener detalle de un evento específico (público)
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {
         try {
@@ -76,17 +71,6 @@ public class EventController {
         }
     }
 
-    /**
-     * POST /api/events
-     * Crear un nuevo evento (protegido)
-     * 
-     * Validaciones:
-     * - Nombre obligatorio
-     * - Fecha inicio < Fecha fin
-     * - Coordenadas válidas (latitud [-90, 90], longitud [-180, 180])
-     * 
-     * El evento se asocia automáticamente con el usuario autenticado
-     */
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody CreateEventRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -124,12 +108,6 @@ public class EventController {
         }
     }
 
-    /**
-     * PUT /api/events/{id}
-     * Editar un evento (protegido, solo el creador)
-     * 
-     * Solo el creador del evento puede editarlo
-     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody UpdateEventRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -168,12 +146,6 @@ public class EventController {
         }
     }
 
-    /**
-     * DELETE /api/events/{id}
-     * Eliminar un evento (protegido, solo el creador)
-     * 
-     * Solo el creador del evento puede eliminarlo
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -198,10 +170,6 @@ public class EventController {
                     .body("Error al eliminar el evento");
         }
     }
-
-    /**
-     * Endpoints adicionales para funcionalidad de likes/favoritos
-     */
 
     // Filtrar eventos por categoría
     @GetMapping("/category/{category}")

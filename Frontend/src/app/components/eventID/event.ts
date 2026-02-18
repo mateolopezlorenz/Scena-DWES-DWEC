@@ -5,11 +5,12 @@ import { UserEventService } from '../../services/userEventService';
 import { Events } from '../../models/eventModel';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MapView } from '../map-view/map-view';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-event',
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule, MapView],
   templateUrl: './event.html',
   styleUrls: ['./event.scss'],
 })
@@ -22,6 +23,7 @@ export class Event implements OnInit, AfterViewChecked {
   conformacionEliminar: string = '';
   isLoggedIn: boolean = false;
   liked: boolean = false;
+  showEditMapSelector: boolean = false;
   private map: any = null;
   private mapInitialized: boolean = false;
 
@@ -123,6 +125,14 @@ export class Event implements OnInit, AfterViewChecked {
         address: this.event.address
       };
     }
+  }
+
+  //Método para capturar coordenadas del mapa en edición
+  onEditCoordinatesSelected(coordinates: { latitude: number, longitude: number, address: string }) {
+    this.editedEvent.latitude = coordinates.latitude;
+    this.editedEvent.longitude = coordinates.longitude;
+    this.editedEvent.address = coordinates.address;
+    this.showEditMapSelector = false;
   }
 
   //Método para mostrar el formulario de edición.

@@ -1,6 +1,8 @@
 package daw2026.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,29 @@ public class EventService {
     }
 
     public List<Event> findAllOrderByStartDate() {
+        return eventRepository.findAllByOrderByStartDateAsc();
+    }
+
+    public List<Event> findFiltered(Category category, LocalDate date, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return eventRepository.searchByText(search.trim());
+        }
+
+        boolean hasCategory = category != null;
+        boolean hasDate = date != null;
+
+        if (hasCategory && hasDate) {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+            return eventRepository.findByCategoryAndDate(category, startOfDay, endOfDay);
+        } else if (hasCategory) {
+            return eventRepository.findByCategoryOrderByStartDateAsc(category);
+        } else if (hasDate) {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+            return eventRepository.findByDate(startOfDay, endOfDay);
+        }
+
         return eventRepository.findAllByOrderByStartDateAsc();
     }
 
