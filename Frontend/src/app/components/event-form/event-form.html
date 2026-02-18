@@ -31,8 +31,8 @@
 
     <label for="localId">Local:</label>
     <select id="localId" name="localId" [(ngModel)]="eventData.localId" required>
-      <option [value]="null">Selecciona un local</option>
-      <option *ngFor="let local of locals" [value]="local.id">{{ local.name }} - {{ local.ubication }}</option>
+      <option [ngValue]="null">Selecciona un local</option>
+      <option *ngFor="let local of locals" [ngValue]="local.id">{{ local.name }} - {{ local.ubication }}</option>
     </select>
     <br>
 

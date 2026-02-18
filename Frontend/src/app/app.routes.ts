@@ -6,6 +6,7 @@ import { Home } from './components/home/home';
 import { EventList } from './components/event-list/event-list';
 import { LocalForm } from './components/local-form/local-form';
 import { Event } from './components/eventID/event';
+import { UserLikesComponent } from './components/user-likes/user-likes';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'event/:id', component: Event },
   { path: 'event', component: EventForm },
   { path: 'local', component: LocalForm },
+  { path: 'user-likes', component: UserLikesComponent },
   { path: '**', redirectTo: '/home' }
 ];

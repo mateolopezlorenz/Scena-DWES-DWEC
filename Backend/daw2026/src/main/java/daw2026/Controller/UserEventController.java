@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Dto.LikeCountResponse;
 import daw2026.Dto.UserEventResponse;
+import daw2026.Model.Event;
 import daw2026.Model.User;
 import daw2026.Model.UserEvent;
 import daw2026.Repository.UserRepository;
@@ -92,13 +93,13 @@ public class UserEventController {
         }
     }
 
-    // Obtener eventos que le gustan al usuario 
+    // Obtener eventos que le gustan al usuario
     @GetMapping("/liked")
     public ResponseEntity<?> getLikedByUser(@AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-            List<UserEvent> likedEvents = userEventService.findLikedByUser(user.getId());
+            List<Event> likedEvents = userEventService.findLikedEventsByUser(user.getId());
             return ResponseEntity.status(HttpStatus.OK).body(likedEvents);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

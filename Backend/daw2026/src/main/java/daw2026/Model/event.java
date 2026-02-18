@@ -3,6 +3,7 @@ package daw2026.Model;
 import java.sql.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -71,6 +72,6 @@ public class Event {
 
     // Relación con UserEvent para cascade delete
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({ "event" })
+    @JsonIgnore
     private List<UserEvent> userEvents;
 }

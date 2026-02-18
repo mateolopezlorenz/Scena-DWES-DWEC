@@ -14,7 +14,6 @@ export class LocalForm {
 
   //Datos del local que se enviarán al backend.
   localData = {
-    id: 0,
     name: '',
     latitude: 0,
     longitude: 0,

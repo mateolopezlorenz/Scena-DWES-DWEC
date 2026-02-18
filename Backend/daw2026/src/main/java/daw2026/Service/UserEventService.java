@@ -37,7 +37,7 @@ public class UserEventService {
             UserEvent newUserEvent = new UserEvent();
             newUserEvent.setUser(user);
             newUserEvent.setEvent(event);
-            newUserEvent.setLiked(false);
+            newUserEvent.setLiked(true);
             newUserEvent.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             return userEventRepository.save(newUserEvent);
         } else {
@@ -54,10 +54,10 @@ public class UserEventService {
         return userEventRepository.countByEventIdAndLikedTrue(eventId);
     }
 
-    public List<UserEvent> findLikedByUser(Long userId) {
+    public List<Event> findLikedEventsByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("Usuario con ID " + userId + " no encontrado.");
         }
-        return userEventRepository.findByUserIdAndLikedTrue(userId);
+        return eventRepository.findLikedEventsByUserId(userId);
     }
 }

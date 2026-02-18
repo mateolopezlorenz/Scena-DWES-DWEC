@@ -5,7 +5,13 @@
   <div *ngFor="let event of events" class="event-card">
     <h2>{{ event.name }}</h2>
     <p>{{ event.description }} - {{ event.startDate }} - Local: {{ event.local?.name }}</p>
-    <button (click)="viewEvent(event.id)">Ver detalles del evento</button>
+    <div class="event-actions">
+      <button (click)="viewEvent(event.id)">Ver detalles del evento</button>
+      <button *ngIf="isLoggedIn" (click)="toggleLike(event.id)" class="like-btn" [class.liked]="isLiked(event.id)">
+        {{ isLiked(event.id) ? '&#9829;' : '&#9825;' }} MG ({{ likeCounts[event.id] || 0 }})
+      </button>
+      <span *ngIf="!isLoggedIn" class="like-count">&#9825; MG ({{ likeCounts[event.id] || 0 }})</span>
+    </div>
   </div>
 
   <p *ngIf="events.length === 0">No hay eventos para mostrar.</p>

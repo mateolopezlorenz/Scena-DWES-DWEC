@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EventService } from '../../services/eventService';
 import { Events } from '../../models/eventModel';
 import { CommonModule } from '@angular/common';
@@ -39,7 +39,7 @@ export class Event implements OnInit {
     localId: null
   };
 
-  constructor(private route: ActivatedRoute, private eventService: EventService ) {}
+  constructor(private route: ActivatedRoute, private eventService: EventService, private router: Router) {}
 
   //Obtenemos el ID del evento y cargamos sus datos.
   ngOnInit(): void {
@@ -152,7 +152,7 @@ export class Event implements OnInit {
     this.eventService.deleteEvent(this.event.id).subscribe({
       next: () => {
         alert('Evento eliminado correctamente');
-        window.location.href = '/events';
+        this.router.navigate(['/event-list']);
       },
       error: (err) => {
         const errorMsg = err.error?.message || err.error || err.message || 'Error desconocido';
