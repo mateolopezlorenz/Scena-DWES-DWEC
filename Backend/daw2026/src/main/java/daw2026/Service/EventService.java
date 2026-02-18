@@ -1,6 +1,6 @@
 package daw2026.Service;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,10 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import daw2026.Model.Category;
 import daw2026.Model.Event;
-import daw2026.Model.Local;
 import daw2026.Model.User;
 import daw2026.Repository.EventRepository;
-import daw2026.Repository.LocalRepository;
 import daw2026.Repository.UserRepository;
 import daw2026.exception.ResourceNotFoundException;
 import daw2026.exception.UnauthorizedException;
@@ -22,13 +20,10 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-    private final LocalRepository localRepository;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository,
-            LocalRepository localRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
-        this.localRepository = localRepository;
     }
 
     public List<Event> findAllOrderByStartDate() {
@@ -39,10 +34,6 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
-    public List<Event> findByStartDate(Date startDate) {
-        return eventRepository.findByStartDate(startDate);
-    }
-
     public List<Event> findByCategory(Category category) {
         return eventRepository.findByCategory(category);
     }
@@ -51,48 +42,99 @@ public class EventService {
         return eventRepository.findByName(name);
     }
 
-    public Event createEvent(Long userId, Long localId, Event event) {
+    public Event createEvent(Long userId, Event event) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        Local local = localRepository.findById(localId)
-                .orElseThrow(() -> new ResourceNotFoundException("Local no encontrado"));
-        if (event.getCapacity() > local.getCapacity()) {
-            throw new IllegalArgumentException("La capacidad del evento supera la del local");
+        
+        // Validaciones
+        if (event.getName() == null || event.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del evento es obligatorio");
         }
-        if (event.getRooms() > local.getRooms()) {
-            throw new IllegalArgumentException("Las salas del evento superan las del local");
+        if (event.getStartDate() == null) {
+            throw new IllegalArgumentException("La fecha de inicio es obligatoria");
         }
-        if (event.getEndDate().before(event.getStartDate())) {
+        if (event.getEndDate() == null) {
+            throw new IllegalArgumentException("La fecha de fin es obligatoria");
+        }
+        if (event.getEndDate().isBefore(event.getStartDate())) {
             throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
         }
+        if (event.getLatitude() == null) {
+            throw new IllegalArgumentException("La latitud es obligatoria");
+        }
+        if (event.getLongitude() == null) {
+            throw new IllegalArgumentException("La longitud es obligatoria");
+        }
+        if (Math.abs(event.getLatitude()) > 90) {
+            throw new IllegalArgumentException("La latitud debe estar entre -90 y 90");
+        }
+        if (Math.abs(event.getLongitude()) > 180) {
+            throw new IllegalArgumentException("La longitud debe estar entre -180 y 180");
+        }
+        
         event.setUser(user);
-        event.setLocal(local);
-        event.setCreatedAt(new Date(System.currentTimeMillis()));
+        event.setCreatedAt(LocalDateTime.now());
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(Long userId, Event event) {
-        Event existingEvent = eventRepository.findById(event.getId())
+    public Event updateEvent(Long userId, Long eventId, Event eventDetails) {
+        Event existingEvent = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
+        
         if (!existingEvent.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("No tienes permisos para actualizar este evento");
         }
-        event.setUser(existingEvent.getUser());
-        event.setLocal(existingEvent.getLocal());
-        event.setCreatedAt(existingEvent.getCreatedAt());
-        return eventRepository.save(event);
+        
+        // Actualizar campos si se proporcionan
+        if (eventDetails.getName() != null && !eventDetails.getName().isEmpty()) {
+            existingEvent.setName(eventDetails.getName());
+        }
+        if (eventDetails.getDescription() != null) {
+            existingEvent.setDescription(eventDetails.getDescription());
+        }
+        if (eventDetails.getCategory() != null) {
+            existingEvent.setCategory(eventDetails.getCategory());
+        }
+        if (eventDetails.getStartDate() != null) {
+            existingEvent.setStartDate(eventDetails.getStartDate());
+        }
+        if (eventDetails.getEndDate() != null) {
+            existingEvent.setEndDate(eventDetails.getEndDate());
+        }
+        if (eventDetails.getLatitude() != null) {
+            if (Math.abs(eventDetails.getLatitude()) > 90) {
+                throw new IllegalArgumentException("La latitud debe estar entre -90 y 90");
+            }
+            existingEvent.setLatitude(eventDetails.getLatitude());
+        }
+        if (eventDetails.getLongitude() != null) {
+            if (Math.abs(eventDetails.getLongitude()) > 180) {
+                throw new IllegalArgumentException("La longitud debe estar entre -180 y 180");
+            }
+            existingEvent.setLongitude(eventDetails.getLongitude());
+        }
+        if (eventDetails.getAddress() != null) {
+            existingEvent.setAddress(eventDetails.getAddress());
+        }
+        
+        // Validar coherencia de fechas después de actualizar
+        if (existingEvent.getEndDate().isBefore(existingEvent.getStartDate())) {
+            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
+        }
+        
+        return eventRepository.save(existingEvent);
     }
 
     @Transactional
     public void deleteEvent(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
+        
         if (!event.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("No tienes permisos para eliminar este evento");
         }
 
-        // Con cascade delete configurado, los registros de user_event se eliminan
-        // automáticamente
+        // Con cascade delete configurado, los registros de user_event se eliminan automáticamente
         eventRepository.delete(event);
     }
 }

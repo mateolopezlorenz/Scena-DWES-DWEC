@@ -12,7 +12,6 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class Login {
 
-  //Datos que introduce el usuario en el formulario de login.
   loginData = {
     email: '',
     password: ''

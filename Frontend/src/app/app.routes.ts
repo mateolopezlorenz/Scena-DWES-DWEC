@@ -7,6 +7,7 @@ import { EventList } from './components/event-list/event-list';
 import { LocalForm } from './components/local-form/local-form';
 import { Event } from './components/eventID/event';
 import { UserLikesComponent } from './components/user-likes/user-likes';
+import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -15,8 +16,8 @@ export const routes: Routes = [
   { path: 'home', component: Home },
   { path: 'event-list', component: EventList },
   { path: 'event/:id', component: Event },
-  { path: 'event', component: EventForm },
-  { path: 'local', component: LocalForm },
-  { path: 'user-likes', component: UserLikesComponent },
+  { path: 'event', component: EventForm, canActivate: [authGuard] },
+  { path: 'local', component: LocalForm, canActivate: [authGuard] },
+  { path: 'user-likes', component: UserLikesComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '/home' }
 ];

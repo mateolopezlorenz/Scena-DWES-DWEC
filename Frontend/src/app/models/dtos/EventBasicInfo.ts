@@ -1,6 +1,7 @@
 import { Local } from '../localModel';
 
 //Información resumida de un evento.
+
 export interface EventBasicInfo {
   id: number;
   name: string;

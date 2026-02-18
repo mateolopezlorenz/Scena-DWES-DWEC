@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { EventService } from '../../services/eventService';
 import { UserEventService } from '../../services/userEventService';
@@ -13,10 +13,10 @@ import { CommonModule } from '@angular/common';
 })
 export class EventList implements OnInit {
 
-  //Lista de eventos.
-  events: Events[] = [];
+  @Input() inputEvents: Events[] | null = null;
+  @Input() title: string = 'Lista de Eventos';
 
-  //Estado de likes.
+  events: Events[] = [];
   isLoggedIn = false;
   likeCounts: { [eventId: number]: number } = {};
   likedEventIds: Set<number> = new Set();
@@ -27,13 +27,19 @@ export class EventList implements OnInit {
     private router: Router
   ) {}
 
-  //Se carga la lista de eventos al acceder a la página.
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');
-    this.loadEvents();
+    if (this.inputEvents !== null) {
+      this.events = this.inputEvents;
+      this.loadLikeCounts();
+      if (this.isLoggedIn) {
+        this.loadUserLikes();
+      }
+    } else {
+      this.loadEvents();
+    }
   }
 
-  //Método para cargar los eventos.
   loadEvents() {
     this.eventService.getAllEvents().subscribe({
       next: (data: Events[]) => {
@@ -47,7 +53,6 @@ export class EventList implements OnInit {
     });
   }
 
-  //Cargar conteo de MG para cada evento.
   loadLikeCounts() {
     for (const event of this.events) {
       this.userEventService.countLikes(event.id).subscribe({
@@ -57,7 +62,6 @@ export class EventList implements OnInit {
     }
   }
 
-  //Cargar qué eventos ha dado MG el usuario.
   loadUserLikes() {
     this.userEventService.getLikedByUser().subscribe({
       next: (likedEvents: Events[]) => {
@@ -67,28 +71,30 @@ export class EventList implements OnInit {
     });
   }
 
-  //Dar o quitar MG a un evento.
   toggleLike(eventId: number) {
-    this.userEventService.toggleLike(eventId).subscribe({
-      next: (res: any) => {
-        if (res.liked) {
-          this.likedEventIds.add(eventId);
-          this.likeCounts[eventId] = (this.likeCounts[eventId] || 0) + 1;
-        } else {
+    if (this.isLiked(eventId)) {
+      this.userEventService.removeLike(eventId).subscribe({
+        next: () => {
           this.likedEventIds.delete(eventId);
           this.likeCounts[eventId] = Math.max((this.likeCounts[eventId] || 0) - 1, 0);
-        }
-      },
-      error: (err) => console.error('Error al dar MG', err)
-    });
+        },
+        error: (err) => console.error('Error al quitar like', err)
+      });
+    } else {
+      this.userEventService.addLike(eventId).subscribe({
+        next: () => {
+          this.likedEventIds.add(eventId);
+          this.likeCounts[eventId] = (this.likeCounts[eventId] || 0) + 1;
+        },
+        error: (err) => console.error('Error al dar like', err)
+      });
+    }
   }
 
-  //Comprobar si el usuario ha dado MG a un evento.
   isLiked(eventId: number): boolean {
     return this.likedEventIds.has(eventId);
   }
 
-  //Método para ver los detalles del evento.
   viewEvent(id: number) {
     this.router.navigate(['/event', id]);
   }

@@ -35,8 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (requestPath.startsWith("/api/auth/") ||
             requestPath.equals("/error") ||
             (requestPath.startsWith("/api/events/") && "GET".equals(request.getMethod())) ||
-            (requestPath.equals("/api/locals/all") && "GET".equals(request.getMethod())) ||
-            (requestPath.startsWith("/api/user-events/likes/") && "GET".equals(request.getMethod()))) {
+            (requestPath.equals("/api/locals/all") && "GET".equals(request.getMethod()))) {
             chain.doFilter(request, response);
             return;
         }
@@ -55,9 +54,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 username = jwtTokenUtil.extractUsername(jwt);
             } catch (Exception e) {
                 logger.error("JWT Token extraction error: " + e.getMessage());
-            }
-        }
-        
         //Si el username no está vacío, y no existe una autenticación anterior, validamos el token.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
@@ -68,7 +64,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
 
-                //Establecemos los detalles de la autenticación y la guardamos.
+                //Establecemos los detalles de la autenticación y la guardamos.                UsernamePasswordAuthenticationToken authenticationToken = 
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }

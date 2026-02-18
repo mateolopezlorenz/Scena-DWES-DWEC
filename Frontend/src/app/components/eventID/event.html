@@ -8,7 +8,16 @@
   <p><strong>Capacidad:</strong> {{ event.capacity }}</p>
   <p><strong>Salas:</strong> {{ event.rooms }}</p>
   <p><strong>Local:</strong> {{ event.local?.name }}</p>
+  <p><strong>Adreça:</strong> {{ event.local?.ubication }}</p>
   <p><strong>Usuario:</strong> {{ event.user?.username }}</p>
+
+  <div *ngIf="event.local?.latitude && event.local?.longitude" style="width:100%;height:400px;margin:15px 0;">
+    <div id="event-map" style="width:100%;height:100%;"></div>
+  </div>
+
+  <button *ngIf="isLoggedIn" (click)="toggleLike()" [class.liked]="liked">
+    {{ liked ? '&#10084; Ja no m\'agrada' : '&#9825; M\'agrada' }}
+  </button>
 
   <div *ngIf="esCreador()">
     <button (click)="showEditForm()">Editar</button>
@@ -40,7 +49,14 @@
 
     <div>
       <label>Categoría: </label>
-      <input type="text" [(ngModel)]="editedEvent.category" name="category" required/>
+      <select [(ngModel)]="editedEvent.category" name="category" required>
+        <option value="">Selecciona una categoría</option>
+        <option value="TRAP">Trap</option>
+        <option value="REGGAETON">Reggaeton</option>
+        <option value="TECHNO">Techno</option>
+        <option value="ROCK">Rock</option>
+        <option value="FLAMENCO">Flamenco</option>
+      </select>
     </div>
 
     <div>

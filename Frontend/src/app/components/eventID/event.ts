@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EventService } from '../../services/eventService';
+import { UserEventService } from '../../services/userEventService';
 import { Events } from '../../models/eventModel';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-event',
@@ -11,13 +13,17 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './event.html',
   styleUrls: ['./event.scss'],
 })
-export class Event implements OnInit {
+export class Event implements OnInit, AfterViewChecked {
   event: Events | null = null;
   eventId: number | null = null;
   usuarioActivo: number | null = null;
   usuarioEditando: boolean = false;
   usuarioEliminando: boolean = false;
   conformacionEliminar: string = '';
+  isLoggedIn: boolean = false;
+  liked: boolean = false;
+  private map: any = null;
+  private mapInitialized: boolean = false;
 
   editedEvent: {
     name: string;
@@ -39,19 +45,14 @@ export class Event implements OnInit {
     localId: null
   };
 
-  constructor(private route: ActivatedRoute, private eventService: EventService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private eventService: EventService, private userEventService: UserEventService, private router: Router) {}
 
-  //Obtenemos el ID del evento y cargamos sus datos.
   ngOnInit(): void {
+    this.isLoggedIn = !!localStorage.getItem('token');
     this.usuarioActivado();
 
-    //Método con el cual obtenemos el ID del evento y cargamos sus datos.
     this.route.params.subscribe(params => {
-
-      //Obtenemos el ID del evento.
       this.eventId = params['id'];
-
-      //Si el ID existe, cargamos los datos.
       if (this.eventId) {
         this.loadEvent();
       }
@@ -70,8 +71,35 @@ export class Event implements OnInit {
         next: (data: Events) => {
           this.event = data;
           this.datosDeInicio();
+          if (this.isLoggedIn) {
+            this.loadLikeStatus();
+          }
         },
         error: (err) => console.error('Error al cargar el evento', err)
+      });
+    }
+  }
+
+  loadLikeStatus(): void {
+    this.userEventService.getLikedByUser().subscribe({
+      next: (likedEvents: Events[]) => {
+        this.liked = likedEvents.some(e => e.id === this.event?.id);
+      },
+      error: () => this.liked = false
+    });
+  }
+
+  toggleLike(): void {
+    if (!this.event) return;
+    if (this.liked) {
+      this.userEventService.removeLike(this.event.id).subscribe({
+        next: () => this.liked = false,
+        error: (err) => console.error('Error al quitar like', err)
+      });
+    } else {
+      this.userEventService.addLike(this.event.id).subscribe({
+        next: () => this.liked = true,
+        error: (err) => console.error('Error al dar like', err)
       });
     }
   }
@@ -160,5 +188,49 @@ export class Event implements OnInit {
         console.error('Error al eliminar el evento:', err);
       }
     });
+  }
+
+  //Inicializar mapa cuando el DOM esté listo
+  ngAfterViewChecked(): void {
+    if (!this.mapInitialized && this.event?.local?.latitude && this.event?.local?.longitude && !this.usuarioEditando && !this.usuarioEliminando) {
+      const mapEl = document.getElementById('event-map');
+      if (mapEl) {
+        this.initMap();
+      }
+    }
+  }
+
+  private initMap(): void {
+    if (!this.event?.local) return;
+    this.mapInitialized = true;
+
+    const lat = this.event.local.latitude;
+    const lng = this.event.local.longitude;
+
+    // Fix iconos Leaflet
+    const defaultIcon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    L.Marker.prototype.options.icon = defaultIcon;
+
+    this.map = L.map('event-map', {
+      center: [lat, lng],
+      zoom: 15
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(this.map);
+
+    L.marker([lat, lng])
+      .addTo(this.map)
+      .bindPopup(`<b>${this.event.local.name}</b><br>${this.event.local.ubication}`)
+      .openPopup();
   }
 }

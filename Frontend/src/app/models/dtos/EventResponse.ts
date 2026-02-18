@@ -2,7 +2,7 @@ import { Local } from '../localModel';
 import { UserResponse } from './UserResponse';
 
 
-//Respuesta detallada de un evento, incluyendo información del usuario creador y el local.
+
 export interface EventResponse {
   id: number;
   name: string;

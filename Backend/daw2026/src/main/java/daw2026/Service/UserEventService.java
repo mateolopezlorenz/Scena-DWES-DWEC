@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import daw2026.Model.Event;
 import daw2026.Model.User;
@@ -25,33 +26,46 @@ public class UserEventService {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
     }
-    
-    public UserEvent toggleLike(Long userId, Long eventId) {
+
+    public UserEvent addLike(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario con ID " + userId + " no encontrado."));
         Event event = eventRepository.findById(eventId)
             .orElseThrow(() -> new ResourceNotFoundException("Evento con ID " + eventId + " no encontrado."));
-        
-        Optional<UserEvent> userEvent = userEventRepository.findByUserIdAndEventId(userId, eventId);
-        if (userEvent.isEmpty()) {
-            UserEvent newUserEvent = new UserEvent();
-            newUserEvent.setUser(user);
-            newUserEvent.setEvent(event);
-            newUserEvent.setLiked(true);
-            newUserEvent.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            return userEventRepository.save(newUserEvent);
-        } else {
-            userEvent.get().setLiked(!userEvent.get().getLiked());
-            return userEventRepository.save(userEvent.get());
+
+        Optional<UserEvent> existing = userEventRepository.findByUserIdAndEventId(userId, eventId);
+        if (existing.isPresent()) {
+            throw new IllegalArgumentException("Ya has dado like a este evento.");
         }
+
+        UserEvent userEvent = new UserEvent();
+        userEvent.setUser(user);
+        userEvent.setEvent(event);
+        userEvent.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        return userEventRepository.save(userEvent);
     }
 
-    public Optional<UserEvent> findByUserAndEvent(Long userId, Long eventId) {
-        return userEventRepository.findByUserIdAndEventId(userId, eventId);
+    @Transactional
+    public void removeLike(Long userId, Long eventId) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("Usuario con ID " + userId + " no encontrado.");
+        }
+        if (!eventRepository.existsById(eventId)) {
+            throw new ResourceNotFoundException("Evento con ID " + eventId + " no encontrado.");
+        }
+        Optional<UserEvent> existing = userEventRepository.findByUserIdAndEventId(userId, eventId);
+        if (existing.isEmpty()) {
+            throw new ResourceNotFoundException("No has dado like a este evento.");
+        }
+        userEventRepository.deleteByUserIdAndEventId(userId, eventId);
+    }
+
+    public boolean isLiked(Long userId, Long eventId) {
+        return userEventRepository.findByUserIdAndEventId(userId, eventId).isPresent();
     }
 
     public long countLikes(Long eventId) {
-        return userEventRepository.countByEventIdAndLikedTrue(eventId);
+        return userEventRepository.countByEventId(eventId);
     }
 
     public List<Event> findLikedEventsByUser(Long userId) {

@@ -1,6 +1,6 @@
 package daw2026.Model;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,44 +34,39 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String name;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(length = 50)
     private Category category;
 
     @Column(nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Column(nullable = false)
-    private int capacity;
+    private Double latitude;
 
     @Column(nullable = false)
-    private int rooms;
+    private Double longitude;
+
+    @Column(length = 255)
+    private String address;
 
     @Column(name = "created_at", nullable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    // Quien crea el evento (ignoramos events y locals del User para evitar
-    // recursión infinita).
+    // Quien crea el evento (ignoramos events del User para evitar recursión infinita).
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({ "events", "locals" })
+    @JsonIgnoreProperties({ "events", "locals", "password" })
     private User user;
-
-    // Donde se realiza el evento (ignoramos events y user del Local para evitar
-    // recursión infinita).
-    @ManyToOne
-    @JoinColumn(name = "local_id", nullable = false)
-    @JsonIgnoreProperties({ "events", "user" })
-    private Local local;
 
     // Relación con UserEvent para cascade delete
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)

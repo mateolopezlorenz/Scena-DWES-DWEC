@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,7 +22,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_event", uniqueConstraints = {
+@Table(name = "user_likes", uniqueConstraints = {
 @UniqueConstraint(columnNames = {"user_id", "event_id"})
 })
 @Data
@@ -31,21 +34,18 @@ public class UserEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación con User (ignoramos events y locals del User para evitar recursión infinita).
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties({"events", "locals"})
     private User user;
 
-    // Relación con Event (ignoramos user y local del Event para evitar recursión infinita).
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties({"user", "local"})
     private Event event;
 
-    @Column(nullable = false)
-    private Boolean liked = false;
-
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     private Timestamp createdAt;
 }

@@ -1,6 +1,6 @@
 package daw2026.Dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import daw2026.Model.Category;
 import lombok.AllArgsConstructor;
@@ -15,8 +15,9 @@ public class UpdateEventRequest {
     private String name;
     private String description;
     private Category category;
-    private Date startDate;
-    private Date endDate;
-    private int capacity;
-    private int rooms;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private Double latitude;
+    private Double longitude;
+    private String address;
 }

@@ -12,7 +12,7 @@ import * as L from 'leaflet';
 export class MapView implements AfterViewInit {
   private map: any;
 
-  // DATOS MOCK (Simulados según el PDF para ver algo ya)
+  
   private events = [
     {
       id: 1,
@@ -56,43 +56,32 @@ export class MapView implements AfterViewInit {
   }
 
   private initMap(): void {
-
-    // 1. Definir los límites geográficos de Mallorca (una "caja" alrededor de la isla)
     const southWest = L.latLng(39.20, 2.25);
     const northEast = L.latLng(40.05, 3.50);
-
-    // Crear el objeto de límites
     const mallorcaBounds = L.latLngBounds(southWest, northEast);
 
-    // 2. Inicializamos el mapa pasando un segundo argumento con las opciones
     this.map = L.map('map', {
-      center: [39.695, 3.018], // Dónde empieza centrado
-      zoom: 10,                  // Zoom inicial
-      minZoom: 9.8,                // Evita hacer demasiado zoom out
-      maxZoom: 16,               // Evita hacer zoom in extremo a nivel de calle
-      maxBounds: mallorcaBounds, // Impide navegar fuera de la caja definida
-      maxBoundsViscosity: 1.0    // Define qué tan "pegajosos" son los bordes
+      center: [39.695, 3.018],
+      zoom: 10,
+      minZoom: 9.8,
+      maxZoom: 16,
+      maxBounds: mallorcaBounds,
+      maxBoundsViscosity: 1.0
     });
-    // 2. Capa de tiles
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    // 3. Arreglar el bug de iconos de Leaflet
     this.fixLeafletIcons();
-
-    // 4. Añadir marcadores
     this.addMarkers();
   }
 
   private addMarkers(): void {
     this.events.forEach(event => {
       if (event.local && event.local.latitude && event.local.longitude) {
-        
         const marker = L.marker([event.local.latitude, event.local.longitude]);
-
-        // HTML del Popup
         const popupContent = `
           <div style="text-align: center;">
             <h3 style="margin: 0 0 5px 0; color: #333;">${event.name}</h3>
@@ -110,7 +99,7 @@ export class MapView implements AfterViewInit {
     });
   }
 
-  // Hack para los iconos
+  // Bug de Leaflet con iconos, hay que sobrescribir el default
   private fixLeafletIcons(): void {
     const defaultIcon = L.icon({
       iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',

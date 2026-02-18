@@ -1,5 +1,6 @@
 package daw2026.Controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Dto.UpdateUserRequest;
 import daw2026.Dto.UserResponse;
+import daw2026.Model.Event;
 import daw2026.Model.User;
+import daw2026.Service.UserEventService;
 import daw2026.Service.UserService;
 import daw2026.exception.ResourceNotFoundException;
 import daw2026.exception.UserAlreadyExistsException;
@@ -30,7 +33,27 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserEventService userEventService;
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    // Obtener eventos favoritos del usuario autenticado
+    @GetMapping("/me/likes")
+    public ResponseEntity<?> getMyLikes(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Optional<User> userOpt = userService.findByEmail(userDetails.getUsername());
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+            }
+            List<Event> likedEvents = userEventService.findLikedEventsByUser(userOpt.get().getId());
+            return ResponseEntity.ok(likedEvents);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener favoritos");
+        }
+    }
 
     // Devuelve el perfil del usuario logueado.
     @GetMapping("/profile")

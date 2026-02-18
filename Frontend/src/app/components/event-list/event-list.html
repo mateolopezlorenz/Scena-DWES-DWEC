@@ -1,10 +1,12 @@
 <div class="container">
 
-    <h1>Lista de Eventos</h1>
+    <h1>{{ title }}</h1>
 
   <div *ngFor="let event of events" class="event-card">
     <h2>{{ event.name }}</h2>
-    <p>{{ event.description }} - {{ event.startDate }} - Local: {{ event.local?.name }}</p>
+    <p><strong>Categoria:</strong> {{ event.category }}</p>
+    <p><strong>Data:</strong> {{ event.startDate }}</p>
+    <p><strong>Adreça:</strong> {{ event.local?.ubication }}</p>
     <div class="event-actions">
       <button (click)="viewEvent(event.id)">Ver detalles del evento</button>
       <button *ngIf="isLoggedIn" (click)="toggleLike(event.id)" class="like-btn" [class.liked]="isLiked(event.id)">

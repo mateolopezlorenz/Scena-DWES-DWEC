@@ -59,18 +59,16 @@ public class SecurityConfig {
 
             //Definimos los endpoints que serán públicos y cuales necesitarán autenticación.
             .authorizeHttpRequests(auth -> auth
-                // Públicas: 
+                // Públicas:
                 .requestMatchers("/api/auth/**", "/error").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/locals/all").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/user-events/likes/**").permitAll()
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
 
             //Pasamos nuestro filtro de autenticación para poder validar el token en cada petición.
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

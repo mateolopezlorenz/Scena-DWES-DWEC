@@ -13,7 +13,6 @@ import daw2026.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 
-//Servicio el cual se encarga de cargar los datos del usuario, desde la base de datos, para poder válidar el token JWT en cada petición. 
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {

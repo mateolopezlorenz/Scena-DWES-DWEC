@@ -1,6 +1,7 @@
 import { Local } from '../localModel';
 
 //Datos necesarios para crear un nuevo evento.
+
 export interface CreateEventRequest {
   name: string;
   description: string;

@@ -1,4 +1,5 @@
 //Datos necesarios para actualizar la información de un local.
+//Datos necesarios para actualizar la información de un local.
 export interface UpdateLocalRequest {
   name: string;
   latitude: number;

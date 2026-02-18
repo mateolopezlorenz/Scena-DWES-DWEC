@@ -10,7 +10,14 @@
     <br>
 
     <label for="category">Categoría:</label>
-    <input type="text" id="category" name="category" [(ngModel)]="eventData.category" required>
+    <select id="category" name="category" [(ngModel)]="eventData.category" required>
+      <option value="">Selecciona una categoría</option>
+      <option value="TRAP">Trap</option>
+      <option value="REGGAETON">Reggaeton</option>
+      <option value="TECHNO">Techno</option>
+      <option value="ROCK">Rock</option>
+      <option value="FLAMENCO">Flamenco</option>
+    </select>
     <br>
 
     <label for="startDate">Fecha de inicio :</label>
@@ -19,6 +26,9 @@
 
     <label for="endDate">Fecha de fin:</label>
     <input type="date" id="endDate" name="endDate" [(ngModel)]="eventData.endDate" required>
+    <div *ngIf="eventData.startDate && eventData.endDate && eventData.endDate < eventData.startDate" style="color:red;font-size:0.85em;">
+      La fecha de fin debe ser posterior a la fecha de inicio.
+    </div>
     <br>
 
     <label for="capacity">Capacidad:</label>
@@ -36,7 +46,7 @@
     </select>
     <br>
 
-    <button type="submit" [disabled]="!eventForm.form.valid">Crear Evento</button>
+    <button type="submit" [disabled]="!eventForm.form.valid || (eventData.startDate && eventData.endDate && eventData.endDate < eventData.startDate)">Crear Evento</button>
   </form>
 
 

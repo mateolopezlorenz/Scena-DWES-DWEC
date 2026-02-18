@@ -24,7 +24,6 @@ export class LocalForm {
 
   constructor(private authService: Authservice, private localService: LocalService ) {}
 
-  //Método que envía los datos registrados para poder crear el local.
   onSubmit() {    
     this.localService.crearLocal(this.localData).subscribe({
       next: (res: any) => {
