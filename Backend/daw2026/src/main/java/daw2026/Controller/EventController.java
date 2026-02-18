@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import daw2026.Dto.CreateEventRequest;
 import daw2026.Dto.UpdateEventRequest;
+import daw2026.Model.Category;
 import daw2026.Model.Event;
 import daw2026.Model.User;
 import daw2026.Repository.UserRepository;
@@ -65,7 +66,7 @@ public class EventController {
 
     // Filtrar eventos por categoría
     @GetMapping("/category/{category}")
-    public List<Event> getEventsByCategory(@PathVariable String category) {
+    public List<Event> getEventsByCategory(@PathVariable Category category) {
         return eventService.findByCategory(category);
     }
 
@@ -98,7 +99,7 @@ public class EventController {
             if (request.getEndDate() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La fecha de fin es obligatoria");
             }
-            if (request.getCategory() == null || request.getCategory().isEmpty()) {
+            if (request.getCategory() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La categoría es obligatoria");
             }
             if (request.getCapacity() <= 0) {
@@ -141,9 +142,6 @@ public class EventController {
             // Validación de campos
             if (request.getName() != null && request.getName().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre no puede estar vacío");
-            }
-            if (request.getCategory() != null && request.getCategory().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La categoría no puede estar vacía");
             }
             if (request.getCapacity() != 0 && request.getCapacity() <= 0) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La capacidad debe ser mayor a 0");

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import daw2026.Model.Category;
 import daw2026.Model.Event;
 import daw2026.Model.Local;
 import daw2026.Model.User;
@@ -42,7 +43,7 @@ public class EventService {
         return eventRepository.findByStartDate(startDate);
     }
 
-    public List<Event> findByCategory(String category) {
+    public List<Event> findByCategory(Category category) {
         return eventRepository.findByCategory(category);
     }
 

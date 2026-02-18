@@ -2,6 +2,7 @@ package daw2026.Dto;
 
 import java.sql.Date;
 
+import daw2026.Model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateEventRequest {
-    
+
     private String name;
     private String description;
-    private String category;
+    private Category category;
     private Date startDate;
     private Date endDate;
     private int capacity;
