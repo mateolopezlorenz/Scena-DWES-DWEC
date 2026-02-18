@@ -14,7 +14,7 @@ export class Authservice {
     this.isLoggedIn = !!localStorage.getItem('token');
   }
 
-  register(data: {username: string, email: string, password: string}) {
+  register(data: {name: string, email: string, password: string}) {
     return this.http.post<{message: string}>(`${this.url}/register`, data);
   }
 
@@ -37,7 +37,7 @@ export class Authservice {
 
   saveSession(response: LoginResponse): void {
     localStorage.setItem('token', response.token);
-    localStorage.setItem('username', response.username);
+    localStorage.setItem('name', response.name);
     localStorage.setItem('email', response.email);
     localStorage.setItem('id', response.id.toString());
 

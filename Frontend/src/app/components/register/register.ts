@@ -15,7 +15,7 @@ import { Router } from '@angular/router'
 })
 export class Register {
   registerData: RegisterRequest = {
-    username: '',
+    name: '',
     email: '',
     password: '',
     password2: ''

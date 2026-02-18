@@ -1,7 +1,12 @@
 package daw2026.Model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -50,21 +55,23 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
-    @Column(nullable = false)
-    private Double latitude;
+    @Column(nullable = false, precision = 10, scale = 8)
+    private BigDecimal latitude;
 
-    @Column(nullable = false)
-    private Double longitude;
+    @Column(nullable = false, precision = 11, scale = 8)
+    private BigDecimal longitude;
 
     @Column(length = 255)
     private String address;
 
-    @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     // Quien crea el evento (ignoramos events del User para evitar recursión infinita).
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties({ "events", "locals", "password" })
     private User user;
 

@@ -1,6 +1,6 @@
 package daw2026.Service;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,15 +65,14 @@ public class EventService {
         if (event.getLongitude() == null) {
             throw new IllegalArgumentException("La longitud es obligatoria");
         }
-        if (Math.abs(event.getLatitude()) > 90) {
+        if (event.getLatitude().abs().compareTo(BigDecimal.valueOf(90)) > 0) {
             throw new IllegalArgumentException("La latitud debe estar entre -90 y 90");
         }
-        if (Math.abs(event.getLongitude()) > 180) {
+        if (event.getLongitude().abs().compareTo(BigDecimal.valueOf(180)) > 0) {
             throw new IllegalArgumentException("La longitud debe estar entre -180 y 180");
         }
         
         event.setUser(user);
-        event.setCreatedAt(LocalDateTime.now());
         return eventRepository.save(event);
     }
 
@@ -102,13 +101,13 @@ public class EventService {
             existingEvent.setEndDate(eventDetails.getEndDate());
         }
         if (eventDetails.getLatitude() != null) {
-            if (Math.abs(eventDetails.getLatitude()) > 90) {
+            if (eventDetails.getLatitude().abs().compareTo(BigDecimal.valueOf(90)) > 0) {
                 throw new IllegalArgumentException("La latitud debe estar entre -90 y 90");
             }
             existingEvent.setLatitude(eventDetails.getLatitude());
         }
         if (eventDetails.getLongitude() != null) {
-            if (Math.abs(eventDetails.getLongitude()) > 180) {
+            if (eventDetails.getLongitude().abs().compareTo(BigDecimal.valueOf(180)) > 0) {
                 throw new IllegalArgumentException("La longitud debe estar entre -180 y 180");
             }
             existingEvent.setLongitude(eventDetails.getLongitude());

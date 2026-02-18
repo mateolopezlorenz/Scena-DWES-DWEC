@@ -1,9 +1,10 @@
 package daw2026.Model;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -46,6 +47,7 @@ public class UserEvent {
     @JsonIgnoreProperties({"user", "local"})
     private Event event;
 
-    @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

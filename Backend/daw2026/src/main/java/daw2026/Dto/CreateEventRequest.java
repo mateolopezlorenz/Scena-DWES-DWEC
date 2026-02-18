@@ -1,5 +1,6 @@
 package daw2026.Dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import daw2026.Model.Category;
@@ -17,7 +18,7 @@ public class CreateEventRequest {
     private Category category;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Double latitude;
-    private Double longitude;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
     private String address;
 }

@@ -3,6 +3,6 @@
 export interface JwtResponse {
   token: string;
   type: string;
-  username: string;
+  name: string;
   email: string;
 }

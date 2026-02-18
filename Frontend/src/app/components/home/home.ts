@@ -17,7 +17,7 @@ export class Home {
   constructor(private authservice: Authservice, private router: Router) {}
 
     ngOnInit() {
-      this.username = localStorage.getItem('username');
+      this.username = localStorage.getItem('name');
     }
 
     logout() {

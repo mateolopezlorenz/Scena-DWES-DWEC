@@ -1,6 +1,5 @@
 package daw2026.Service;
 
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,19 +34,15 @@ public class AuthService {
     }
 
     public Map<String, Object> register(User nuevoUsuario) {
-        if (userRepository.existsByUsername(nuevoUsuario.getUsername())) {
-            throw new UserAlreadyExistsException("El nombre de usuario '" + nuevoUsuario.getUsername() + "' ya está en uso.");
-        }
         if (userRepository.existsByEmail(nuevoUsuario.getEmail())) {
             throw new UserAlreadyExistsException("El email '" + nuevoUsuario.getEmail() + "' ya está registrado.");
         }
         nuevoUsuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
-        nuevoUsuario.setCreated_at(new Timestamp(System.currentTimeMillis()));
         User usuarioGuardado = userRepository.save(nuevoUsuario);
     
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Usuario registrado exitosamente");
-        response.put("username", usuarioGuardado.getUsername());
+        response.put("name", usuarioGuardado.getName());
         response.put("email", usuarioGuardado.getEmail());
         response.put("id", usuarioGuardado.getId());
 
@@ -73,7 +68,7 @@ public class AuthService {
         return new LoginResponse(
                 "Login correcto",
                 token,
-                user.getUsername(),
+                user.getName(),
                 user.getEmail(),
                 user.getId()
         );

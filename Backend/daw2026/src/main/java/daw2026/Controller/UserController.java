@@ -56,7 +56,7 @@ public class UserController {
     }
 
     // Devuelve el perfil del usuario logueado.
-    @GetMapping("/profile")
+    @GetMapping("/me")
     public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         try {
             Optional<User> userOpt = userService.findByEmail(userDetails.getUsername());
@@ -65,7 +65,7 @@ public class UserController {
                 User user = userOpt.get();
                 UserResponse response = new UserResponse();
                 response.setId(user.getId());
-                response.setUsername(user.getUsername());
+                response.setName(user.getName());
                 response.setEmail(user.getEmail());
                 return ResponseEntity.ok(response);
             } else {
@@ -87,7 +87,7 @@ public class UserController {
                 User user = userOpt.get();
                 UserResponse response = new UserResponse();
                 response.setId(user.getId());
-                response.setUsername(user.getUsername());
+                response.setName(user.getName());
                 response.setEmail(user.getEmail());
                 return ResponseEntity.ok(response);
             } else {
@@ -98,21 +98,21 @@ public class UserController {
         }
     }
 
-    // Busca un usuario por su username.
-    @GetMapping("/username/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+    // Busca un usuario por su nombre.
+    @GetMapping("/name/{name}")
+    public ResponseEntity<?> getUserByName(@PathVariable String name) {
         try {
-            Optional<User> userOpt = userService.findByUsername(username);
+            Optional<User> userOpt = userService.findByName(name);
 
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 UserResponse response = new UserResponse();
                 response.setId(user.getId());
-                response.setUsername(user.getUsername());
+                response.setName(user.getName());
                 response.setEmail(user.getEmail());
                 return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado con username: " + username);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado con nombre: " + name);
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el usuario" + e.getMessage());
@@ -129,7 +129,7 @@ public class UserController {
                 User user = userOpt.get();
                 UserResponse response = new UserResponse();
                 response.setId(user.getId());
-                response.setUsername(user.getUsername());
+                response.setName(user.getName());
                 response.setEmail(user.getEmail());
                 return ResponseEntity.ok(response);
             } else {
@@ -145,8 +145,8 @@ public class UserController {
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         try {
             // Validación de campos
-            if (request.getUsername() != null && request.getUsername().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El username no puede estar vacío");
+            if (request.getName() != null && request.getName().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre no puede estar vacío");
             }
             if (request.getEmail() != null && request.getEmail().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El email no puede estar vacío");
@@ -154,7 +154,7 @@ public class UserController {
             
             User user = new User();
             user.setId(id);
-            user.setUsername(request.getUsername());
+            user.setName(request.getName());
             user.setEmail(request.getEmail());
             
             // Si se proporciona contraseña, encriptarla; si no, mantener la existente

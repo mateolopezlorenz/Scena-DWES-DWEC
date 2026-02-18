@@ -2,11 +2,11 @@
     <h1>Registro de usuarios.</h1>
 
     <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="form">
-        <label for="username">Nombre de usuario:</label>
-        <input type="text" id="username" name="username" [(ngModel)]="registerData.username" #usernameField="ngModel" required minlength="3">
-        <div *ngIf="usernameField.invalid && usernameField.touched" class="error-msg">
-            <span *ngIf="usernameField.errors?.['required']">El nombre de usuario es obligatorio.</span>
-            <span *ngIf="usernameField.errors?.['minlength']">Mínimo 3 caracteres.</span>
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" [(ngModel)]="registerData.name" #nameField="ngModel" required minlength="3">
+        <div *ngIf="nameField.invalid && nameField.touched" class="error-msg">
+            <span *ngIf="nameField.errors?.['required']">El nombre es obligatorio.</span>
+            <span *ngIf="nameField.errors?.['minlength']">Mínimo 3 caracteres.</span>
         </div>
         <br>
 

@@ -28,12 +28,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<MessageResponse> register(@RequestBody RegisterRequest request) {
 
-        if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: El username es obligatorio"));
+        if (request.getName() == null || request.getName().isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: El nombre es obligatorio"));
         }
         
-        if (request.getUsername().length() < 3) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: El username debe tener al menos 3 caracteres"));
+        if (request.getName().length() < 3) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: El nombre debe tener al menos 3 caracteres"));
         }
 
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
@@ -54,7 +54,7 @@ public class AuthController {
 
         //Creamos un nuevo usuario con los datos que se han recibido junto a la petición.
         User nuevoUsuario = new User();
-        nuevoUsuario.setUsername(request.getUsername());
+        nuevoUsuario.setName(request.getName());
         nuevoUsuario.setEmail(request.getEmail());
         nuevoUsuario.setPassword(request.getPassword());
 

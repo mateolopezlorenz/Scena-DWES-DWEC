@@ -24,7 +24,7 @@ export class Navbar {
   }
 
   checkUser() {
-    this.username = localStorage.getItem('username');
+    this.username = localStorage.getItem('name');
   }
 
   logout() {

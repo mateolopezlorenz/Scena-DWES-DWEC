@@ -1,6 +1,5 @@
 package daw2026.Service;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +40,6 @@ public class UserEventService {
         UserEvent userEvent = new UserEvent();
         userEvent.setUser(user);
         userEvent.setEvent(event);
-        userEvent.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         return userEventRepository.save(userEvent);
     }
 
