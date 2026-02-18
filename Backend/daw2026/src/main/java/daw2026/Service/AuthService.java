@@ -35,10 +35,10 @@ public class AuthService {
     }
 
     public Map<String, Object> register(User nuevoUsuario) {
-        if (userRepository.findByUsername(nuevoUsuario.getUsername()).isPresent()) {
+        if (userRepository.existsByUsername(nuevoUsuario.getUsername())) {
             throw new UserAlreadyExistsException("El nombre de usuario '" + nuevoUsuario.getUsername() + "' ya está en uso.");
         }
-        if (userRepository.findByEmail(nuevoUsuario.getEmail()).isPresent()) {
+        if (userRepository.existsByEmail(nuevoUsuario.getEmail())) {
             throw new UserAlreadyExistsException("El email '" + nuevoUsuario.getEmail() + "' ya está registrado.");
         }
         nuevoUsuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));

@@ -176,14 +176,14 @@ public class EventController {
         }
     }
 
-    // Eliminar evento 
+    // Eliminar evento
     @DeleteMapping("/deleteEvent/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             eventService.deleteEvent(user.getId(), id);
-            return ResponseEntity.status(HttpStatus.OK).body("Evento eliminado");
+            return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (UnauthorizedException e) {

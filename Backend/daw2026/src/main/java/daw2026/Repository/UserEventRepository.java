@@ -8,7 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     Optional<UserEvent> findByUserIdAndEventId(Long userId, Long eventId);
+
     long countByEventIdAndLikedTrue(Long eventId);
+
     List<UserEvent> findByUserIdAndLikedTrue(Long userId);
+
+    List<UserEvent> findByEventId(Long eventId);
 
 }

@@ -41,7 +41,7 @@ public class UserEventController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El ID del evento es inválido");
             }
             
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             UserEvent userEvent = userEventService.toggleLike(user.getId(), eventId);
             
@@ -64,7 +64,7 @@ public class UserEventController {
     @GetMapping("/relation")
     public ResponseEntity<?> getUserEvent(@RequestParam Long eventId, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             Optional<UserEvent> userEvent = userEventService.findByUserAndEvent(user.getId(), eventId);
             if (userEvent.isPresent()) {
@@ -96,7 +96,7 @@ public class UserEventController {
     @GetMapping("/liked")
     public ResponseEntity<?> getLikedByUser(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             List<UserEvent> likedEvents = userEventService.findLikedByUser(user.getId());
             return ResponseEntity.status(HttpStatus.OK).body(likedEvents);

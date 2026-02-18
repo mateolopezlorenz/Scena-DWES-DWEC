@@ -41,9 +41,17 @@ export class Register {
         this.router.navigate(["/login"]);
       },
       error: (err) => {
-        
         //Mostramos un mensaje de error al usuario cuando no se ha completado el registro.
-        alert('Error en el registro: ' + err.error.message);
+        let errorMessage = 'Error en el registro';
+        if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (typeof err.error === 'string') {
+          errorMessage = err.error;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+
+        alert('Error en el registro: ' + errorMessage);
         console.error('Error en el registro:', err);
       }
     })

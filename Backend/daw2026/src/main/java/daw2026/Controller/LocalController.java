@@ -99,7 +99,9 @@ public class LocalController {
             }
             
             User user = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + userDetails.getUsername()));
+            
+            System.out.println("[DEBUG_LOG] Usuario encontrado: " + user.getEmail() + " con ID: " + user.getId());
             
             Local local = new Local();
             local.setName(request.getName());
@@ -112,11 +114,14 @@ public class LocalController {
             Local createdLocal = localService.createLocal(user.getId(), local);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdLocal);
         } catch (ResourceNotFoundException e) {
+            System.err.println("[DEBUG_LOG] Error 404: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (LocalAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear el local");
+            System.err.println("[DEBUG_LOG] Error 500: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear el local: " + e.getMessage());
         }
     }
 
@@ -138,7 +143,7 @@ public class LocalController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
             }
             
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             
             Local local = new Local();
@@ -167,8 +172,9 @@ public class LocalController {
     @DeleteMapping("/deleteLocal/{id}")
     public ResponseEntity<?> deleteLocal(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            User user = userRepository.findByUsername(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            
             localService.deleteLocal(user.getId(), id);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {

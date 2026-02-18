@@ -14,18 +14,7 @@ export class EventService {
 
   //Método que envía los datos registrados al backend para crear el evento.
   createEvent(data: any): Observable<Events> {
-
-    //Obtenemos el token de localStorage.
-    const token = localStorage.getItem('token');
-    
-    //Construímos los headers de la petición para añadir el token de autenticación.
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
-    };
-
-    //Devolvemos la petición al backend para crear el evento.
-    return this.http.post<Events>(`${this.url}/createEvent`, data, { headers });
+    return this.http.post<Events>(`${this.url}/createEvent`, data);
   }
 
   //Método para obtener todos los eventos.
@@ -55,25 +44,11 @@ export class EventService {
 
   //Método para actualizar un evento.
   updateEvent(id: number, data: any): Observable<Events> {
-    const token = localStorage.getItem('token');
-    
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
-    };
-
-    return this.http.put<Events>(`${this.url}/updateEvent/${id}`, data, { headers });
+    return this.http.put<Events>(`${this.url}/updateEvent/${id}`, data);
   }
 
   //Método para eliminar un evento.
   deleteEvent(id: number): Observable<any> {
-    const token = localStorage.getItem('token');
-    
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
-    };
-
-    return this.http.delete(`${this.url}/deleteEvent/${id}`, { headers, responseType: 'text' });
+    return this.http.delete(`${this.url}/deleteEvent/${id}`, { responseType: 'text' });
   }
 }

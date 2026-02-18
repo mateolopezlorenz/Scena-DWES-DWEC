@@ -23,25 +23,32 @@ public class EventService {
     private final UserRepository userRepository;
     private final LocalRepository localRepository;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, LocalRepository localRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository,
+            LocalRepository localRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
-        this.localRepository = localRepository;}
+        this.localRepository = localRepository;
+    }
 
     public List<Event> findAllOrderByStartDate() {
-        return eventRepository.findAllByOrderByStartDateAsc();}
+        return eventRepository.findAllByOrderByStartDateAsc();
+    }
 
     public Optional<Event> findById(Long id) {
-        return eventRepository.findById(id);}
+        return eventRepository.findById(id);
+    }
 
     public List<Event> findByStartDate(Date startDate) {
-        return eventRepository.findByStartDate(startDate);}
+        return eventRepository.findByStartDate(startDate);
+    }
 
     public List<Event> findByCategory(String category) {
-        return eventRepository.findByCategory(category);}
-        
+        return eventRepository.findByCategory(category);
+    }
+
     public Optional<Event> findByName(String name) {
-        return eventRepository.findByName(name);}
+        return eventRepository.findByName(name);
+    }
 
     public Event createEvent(Long userId, Long localId, Event event) {
         User user = userRepository.findById(userId)
@@ -49,33 +56,42 @@ public class EventService {
         Local local = localRepository.findById(localId)
                 .orElseThrow(() -> new ResourceNotFoundException("Local no encontrado"));
         if (event.getCapacity() > local.getCapacity()) {
-            throw new IllegalArgumentException("La capacidad del evento supera la del local");}
+            throw new IllegalArgumentException("La capacidad del evento supera la del local");
+        }
         if (event.getRooms() > local.getRooms()) {
-            throw new IllegalArgumentException("Las salas del evento superan las del local");}
+            throw new IllegalArgumentException("Las salas del evento superan las del local");
+        }
         if (event.getEndDate().before(event.getStartDate())) {
-            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");}
+            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
+        }
         event.setUser(user);
         event.setLocal(local);
         event.setCreatedAt(new Date(System.currentTimeMillis()));
-        return eventRepository.save(event);}
+        return eventRepository.save(event);
+    }
 
     public Event updateEvent(Long userId, Event event) {
         Event existingEvent = eventRepository.findById(event.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
         if (!existingEvent.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("No tienes permisos para actualizar este evento");}
+            throw new UnauthorizedException("No tienes permisos para actualizar este evento");
+        }
         event.setUser(existingEvent.getUser());
         event.setLocal(existingEvent.getLocal());
         event.setCreatedAt(existingEvent.getCreatedAt());
-        return eventRepository.save(event);}
+        return eventRepository.save(event);
+    }
 
     @Transactional
     public void deleteEvent(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
         if (!event.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("No tienes permisos para eliminar este evento");}
-        eventRepository.deleteById(eventId);}
+            throw new UnauthorizedException("No tienes permisos para eliminar este evento");
+        }
+
+        // Con cascade delete configurado, los registros de user_event se eliminan
+        // automáticamente
+        eventRepository.delete(event);
+    }
 }
-
-

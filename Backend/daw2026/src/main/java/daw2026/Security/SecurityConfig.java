@@ -62,6 +62,7 @@ public class SecurityConfig {
                 // Públicas: 
                 .requestMatchers("/api/auth/**", "/error").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/locals/all").permitAll()
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )

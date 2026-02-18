@@ -1,8 +1,11 @@
 package daw2026.Model;
+
 import java.sql.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,44 +26,51 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Event {
 
-    //Atributos
+    // Atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String name;
 
     @Column
     private String description;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String category;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Date startDate;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Date endDate;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private int capacity;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private int rooms;
 
-    @Column(name = "created_at", nullable=false)
+    @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
-    // Quien crea el evento (ignoramos events y locals del User para evitar recursión infinita).
+    // Quien crea el evento (ignoramos events y locals del User para evitar
+    // recursión infinita).
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({"events", "locals"})
+    @JsonIgnoreProperties({ "events", "locals" })
     private User user;
 
-    // Donde se realiza el evento (ignoramos events y user del Local para evitar recursión infinita).
+    // Donde se realiza el evento (ignoramos events y user del Local para evitar
+    // recursión infinita).
     @ManyToOne
     @JoinColumn(name = "local_id", nullable = false)
-    @JsonIgnoreProperties({"events", "user"})
+    @JsonIgnoreProperties({ "events", "user" })
     private Local local;
+
+    // Relación con UserEvent para cascade delete
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({ "event" })
+    private List<UserEvent> userEvents;
 }

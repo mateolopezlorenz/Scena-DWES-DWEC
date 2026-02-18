@@ -27,20 +27,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User {
 
-    //Atributos
+    // Atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable=false)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column (unique = true, nullable=false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     // La contraseña se acepta en peticiones pero no se devuelve en respuestas JSON.
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column (nullable=false)
+    @Column(nullable = false)
     private String password;
 
     @Column
@@ -51,13 +51,15 @@ public class User {
     @Column(nullable = false)
     private Boolean enabled = true;
 
-    // Un usuario crea muchos eventos (ignoramos el campo 'user' dentro de Event para evitar recursión infinita).
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({"user", "local"})
+    // Un usuario crea muchos eventos (ignoramos el campo 'user' dentro de Event
+    // para evitar recursión infinita).
+    @OneToMany(mappedBy = "user")
+    @JsonIgnoreProperties({ "user", "local" })
     private List<Event> events = new ArrayList<>();
 
-    // Un usuario crea muchos locales (ignoramos el campo 'user' dentro de Local para evitar recursión infinita).
+    // Un usuario crea muchos locales (ignoramos el campo 'user' dentro de Local
+    // para evitar recursión infinita).
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({"user", "events"})
+    @JsonIgnoreProperties({ "user", "events" })
     private List<Local> locals = new ArrayList<>();
 }

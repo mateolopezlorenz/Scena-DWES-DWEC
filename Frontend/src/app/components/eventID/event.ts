@@ -119,7 +119,8 @@ export class Event implements OnInit {
         this.loadEvent();
       },
       error: (err) => {
-        alert('Error al actualizar el evento: ' + err.message);
+        const errorMsg = err.error?.message || err.error || err.message || 'Error desconocido';
+        alert('Error al actualizar el evento: ' + errorMsg);
         console.error('Error al actualizar el evento:', err);
       }
     });
@@ -154,7 +155,8 @@ export class Event implements OnInit {
         window.location.href = '/events';
       },
       error: (err) => {
-        alert('Error al eliminar el evento: ' + err.message);
+        const errorMsg = err.error?.message || err.error || err.message || 'Error desconocido';
+        alert('Error al eliminar el evento: ' + errorMsg);
         console.error('Error al eliminar el evento:', err);
       }
     });

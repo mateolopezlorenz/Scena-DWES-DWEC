@@ -32,7 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         // Ignorar peticiones a endpoints públicos
         String requestPath = request.getRequestURI();
-        if (requestPath.startsWith("/api/auth/") || requestPath.equals("/error")) {
+        if (requestPath.startsWith("/api/auth/") ||
+            requestPath.equals("/error") ||
+            (requestPath.startsWith("/api/events/") && "GET".equals(request.getMethod())) ||
+            (requestPath.equals("/api/locals/all") && "GET".equals(request.getMethod()))) {
             chain.doFilter(request, response);
             return;
         }

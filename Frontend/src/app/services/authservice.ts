@@ -24,16 +24,6 @@ export class Authservice {
     return this.http.post<{message: string}>(`${this.url}/login`, data);
   }
 
-  //Método que envía los datos del evento registrado al backend.
-  eventForm(data: {name: string, description: string, category: string, startDate: string, endDate: string, capacity: number, rooms: number}) {
-    return this.http.post<{message: string}>('http://localhost:8080/api/events/createEvent', data);
-  }
-
-  //Método que envía los datos del local registrado al backend.
-  localForm(data: {name: string, latitude: number, longitude: number, ubication: string, capacity: number, rooms: number}) {
-    return this.http.post<{message: string}>('api/locals/createLocal', data);
-  }
-
   //Método para obtener el token JWT del localStorage.
   getToken(): string | null {
     return localStorage.getItem('token');

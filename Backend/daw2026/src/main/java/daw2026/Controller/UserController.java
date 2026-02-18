@@ -36,7 +36,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
+            Optional<User> userOpt = userService.findByEmail(userDetails.getUsername());
 
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
