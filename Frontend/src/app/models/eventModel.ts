@@ -8,8 +8,9 @@ export interface Events {
   category: string;
   startDate: string;
   endDate: string;
-  capacity: number;
-  rooms: number;
+  latitude: number;
+  longitude: number;
+  address: string;
   user: User;
   local: Local;
 }

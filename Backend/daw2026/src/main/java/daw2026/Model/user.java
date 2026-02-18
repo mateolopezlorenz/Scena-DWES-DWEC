@@ -52,7 +52,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties({ "user", "local" })
     private List<Event> events = new ArrayList<>();
-de = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({ "user", "events" })
     private List<Local> locals = new ArrayList<>();
 }

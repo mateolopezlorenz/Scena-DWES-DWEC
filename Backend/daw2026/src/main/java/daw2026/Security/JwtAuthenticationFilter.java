@@ -54,6 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 username = jwtTokenUtil.extractUsername(jwt);
             } catch (Exception e) {
                 logger.error("JWT Token extraction error: " + e.getMessage());
+            }
+        }
         //Si el username no está vacío, y no existe una autenticación anterior, validamos el token.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
@@ -61,10 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //Si el token es válido, establecemos la autenticación para permitir al usuario acceder a los endpoints protegidos.
             if (jwtTokenUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = 
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-
-                //Establecemos los detalles de la autenticación y la guardamos.                UsernamePasswordAuthenticationToken authenticationToken = 
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
 

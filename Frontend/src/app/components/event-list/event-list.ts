@@ -43,13 +43,21 @@ export class EventList implements OnInit {
   loadEvents() {
     this.eventService.getAllEvents().subscribe({
       next: (data: Events[]) => {
-        this.events = data;
+        this.events = this.sortEventsByDate(data);
         this.loadLikeCounts();
         if (this.isLoggedIn) {
           this.loadUserLikes();
         }
       },
       error: (err) => console.error('Error al cargar los eventos', err)
+    });
+  }
+
+  sortEventsByDate(events: Events[]): Events[] {
+    return events.sort((a, b) => {
+      const fechaInicio = new Date(a.startDate).getTime();
+      const fechaFin = new Date(b.startDate).getTime();
+      return fechaInicio - fechaFin;
     });
   }
 

@@ -1,21 +1,19 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LocalService } from '../../services/localService';
 import { EventService } from '../../services/eventService';
-import { Local } from '../../models';
+import { MapView } from '../map-view/map-view';
 
 @Component({
   selector: 'app-event-form',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, MapView],
   templateUrl: './event-form.html',
   styleUrls: ['./event-form.scss'],
 })
 export class EventForm {
   
-  //Lista de locales para poder agregar al evento en el formulario.
-  locals: Local[] = [];
+  showMapSelector: boolean = false;
 
   //Datos del evento que se enviarán al backend
   eventData = {
@@ -24,24 +22,12 @@ export class EventForm {
     category: '',
     startDate: '',
     endDate: '',
-    capacity: 1,
-    rooms: 1,
-    localId: null
+    latitude: null as number | null,
+    longitude: null as number | null,
+    address: ''
   };
 
-  constructor(private localService: LocalService, private eventService: EventService) {}
-
-  //Método que se ejecuta y carga la lista de locales disponibles
-  ngOnInit() {
-    this.localService.getLocals().subscribe({
-      next: (res: any) => {
-        this.locals = res;
-      },
-      error: (err: any) => {
-        console.error('Error al obtener los locales:', err);
-      }
-    });
-  }
+  constructor(private eventService: EventService) {}
 
   //Método que envía los datos registrados para poder crear el evento.
   onSubmit() {
@@ -54,5 +40,13 @@ export class EventForm {
       console.error('Error al crear el evento:', err);
     }
   });   
+  }
+
+  //Método para capturar coordenadas del mapa
+  onCoordinatesSelected(coordinates: { latitude: number, longitude: number, address: string }) {
+    this.eventData.latitude = coordinates.latitude;
+    this.eventData.longitude = coordinates.longitude;
+    this.eventData.address = coordinates.address;
+    this.showMapSelector = false;
   }
 }

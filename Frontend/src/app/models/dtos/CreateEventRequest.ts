@@ -1,4 +1,3 @@
-import { Local } from '../localModel';
 
 //Datos necesarios para crear un nuevo evento.
 
@@ -8,7 +7,7 @@ export interface CreateEventRequest {
   category: string;
   startDate: string;
   endDate: string;
-  capacity: number;
-  rooms: number;
-  localId: number;
+  latitude: number;
+  longitude: number;
+  address: string;
 }

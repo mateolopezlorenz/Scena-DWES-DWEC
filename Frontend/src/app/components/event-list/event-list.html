@@ -6,7 +6,7 @@
     <h2>{{ event.name }}</h2>
     <p><strong>Categoria:</strong> {{ event.category }}</p>
     <p><strong>Data:</strong> {{ event.startDate }}</p>
-    <p><strong>Adreça:</strong> {{ event.local?.ubication }}</p>
+    <p><strong>Adreça:</strong> {{ event.local.ubication }}</p>
     <div class="event-actions">
       <button (click)="viewEvent(event.id)">Ver detalles del evento</button>
       <button *ngIf="isLoggedIn" (click)="toggleLike(event.id)" class="like-btn" [class.liked]="isLiked(event.id)">

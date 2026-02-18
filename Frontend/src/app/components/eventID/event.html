@@ -5,13 +5,10 @@
   <p><strong>Categoría:</strong> {{ event.category }}</p>
   <p><strong>Fecha Inicio:</strong> {{ event.startDate }}</p>
   <p><strong>Fecha Fin:</strong> {{ event.endDate }}</p>
-  <p><strong>Capacidad:</strong> {{ event.capacity }}</p>
-  <p><strong>Salas:</strong> {{ event.rooms }}</p>
-  <p><strong>Local:</strong> {{ event.local?.name }}</p>
-  <p><strong>Adreça:</strong> {{ event.local?.ubication }}</p>
+  <p><strong>Dirección:</strong> {{ event.address }}</p>
   <p><strong>Usuario:</strong> {{ event.user?.username }}</p>
 
-  <div *ngIf="event.local?.latitude && event.local?.longitude" style="width:100%;height:400px;margin:15px 0;">
+  <div *ngIf="event.latitude && event.longitude" style="width:100%;height:400px;margin:15px 0;">
     <div id="event-map" style="width:100%;height:100%;"></div>
   </div>
 
@@ -61,27 +58,27 @@
 
     <div>
       <label>Fecha de Inicio: </label>
-      <input type="date" [(ngModel)]="editedEvent.startDate" name="startDate" required/>
+      <input type="datetime-local" [(ngModel)]="editedEvent.startDate" name="startDate" required/>
     </div>
 
     <div>
       <label>Fecha de Fin: </label>
-      <input type="date" [(ngModel)]="editedEvent.endDate" name="endDate" required/>
+      <input type="datetime-local" [(ngModel)]="editedEvent.endDate" name="endDate" required/>
     </div>
 
     <div>
-      <label>Capacidad: </label>
-      <input type="number" [(ngModel)]="editedEvent.capacity" name="capacity" min="1" required/>
+      <label>Latitud: </label>
+      <input type="number" [(ngModel)]="editedEvent.latitude" name="latitude" min="-90" max="90" step="0.0001" required/>
     </div>
 
     <div>
-      <label>Salas: </label>
-      <input type="number" [(ngModel)]="editedEvent.rooms" name="rooms" min="1" required/>
+      <label>Longitud: </label>
+      <input type="number" [(ngModel)]="editedEvent.longitude" name="longitude" min="-180" max="180" step="0.0001" required/>
     </div>
 
     <div>
-      <label>Local ID: </label>
-      <input type="number" [(ngModel)]="editedEvent.localId" name="localId"/>
+      <label>Dirección: </label>
+      <input type="text" [(ngModel)]="editedEvent.address" name="address" required/>
     </div>
 
     <button type="button" (click)="saveChanges()">Guardar Cambios</button>

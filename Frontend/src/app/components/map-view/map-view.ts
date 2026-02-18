@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 
@@ -11,43 +11,9 @@ import * as L from 'leaflet';
 })
 export class MapView implements AfterViewInit {
   private map: any;
-
+  private selectedMarker: any = null;
   
-  private events = [
-    {
-      id: 1,
-      name: 'Concierto de Verano',
-      category: 'Música',
-      start_date: '2026-02-15',
-      local: { 
-        name: 'Palma Arena',
-        latitude: 39.5896, 
-        longitude: 2.6502 
-      }
-    },
-    {
-      id: 2,
-      name: 'Festival de Teatro',
-      category: 'Cultura',
-      start_date: '2026-02-20',
-      local: {
-        name: 'Teatre d\'Alcúdia',
-        latitude: 39.8530,
-        longitude: 3.1237
-      }
-    },
-    {
-      id: 3,
-      name: 'Torneo de Padel',
-      category: 'Esport',
-      start_date: '2026-02-22',
-      local: {
-        name: 'Rafa Nadal Academy',
-        latitude: 39.5539,
-        longitude: 3.2036
-      }
-    }
-  ];
+  @Output() coordinatesSelected = new EventEmitter<{ latitude: number, longitude: number, address: string }>();
 
   constructor() {}
 
@@ -75,31 +41,45 @@ export class MapView implements AfterViewInit {
     }).addTo(this.map);
 
     this.fixLeafletIcons();
-    this.addMarkers();
+    this.addMapClickListener();
   }
 
-  private addMarkers(): void {
-    this.events.forEach(event => {
-      if (event.local && event.local.latitude && event.local.longitude) {
-        const marker = L.marker([event.local.latitude, event.local.longitude]);
-        const popupContent = `
-          <div style="text-align: center;">
-            <h3 style="margin: 0 0 5px 0; color: #333;">${event.name}</h3>
-            <span style="background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 12px;">
-              ${event.category}
-            </span>
-            <p style="margin: 8px 0;">📍 ${event.local.name}</p>
-            <p>📅 ${event.start_date}</p>
-          </div>
-        `;
-
-        marker.bindPopup(popupContent);
-        marker.addTo(this.map);
-      }
+  private addMapClickListener(): void {
+    this.map.on('click', (e: any) => {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      this.selectCoordinates(lat, lng);
     });
   }
 
-  // Bug de Leaflet con iconos, hay que sobrescribir el default
+  private selectCoordinates(lat: number, lng: number): void {
+    // Remover marcador anterior si existe
+    if (this.selectedMarker) {
+      this.map.removeLayer(this.selectedMarker);
+    }
+
+    // Crear nuevo marcador de selección
+    const selectedIcon = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-blue.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    this.selectedMarker = L.marker([lat, lng], { icon: selectedIcon })
+      .bindPopup(`<b>Coordenadas seleccionadas</b><br>Lat: ${lat.toFixed(4)}<br>Lng: ${lng.toFixed(4)}`)
+      .addTo(this.map)
+      .openPopup();
+
+    // Emitir coordenadas al componente padre
+    this.coordinatesSelected.emit({
+      latitude: lat,
+      longitude: lng,
+      address: `${lat.toFixed(4)}, ${lng.toFixed(4)}`
+    });
+  }
+
   private fixLeafletIcons(): void {
     const defaultIcon = L.icon({
       iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',

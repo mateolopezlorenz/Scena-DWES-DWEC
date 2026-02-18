@@ -31,18 +31,18 @@ export class Event implements OnInit, AfterViewChecked {
     category: string;
     startDate: string;
     endDate: string;
-    capacity: number;
-    rooms: number;
-    localId: number | null;
+    latitude: number | null;
+    longitude: number | null;
+    address: string;
   } = {
     name: '',
     description: '',
     category: '',
     startDate: '',
     endDate: '',
-    capacity: 1,
-    rooms: 1,
-    localId: null
+    latitude: null,
+    longitude: null,
+    address: ''
   };
 
   constructor(private route: ActivatedRoute, private eventService: EventService, private userEventService: UserEventService, private router: Router) {}
@@ -118,9 +118,9 @@ export class Event implements OnInit, AfterViewChecked {
         category: this.event.category,
         startDate: this.event.startDate,
         endDate: this.event.endDate,
-        capacity: this.event.capacity,
-        rooms: this.event.rooms,
-        localId: this.event.local?.id ?? null
+        latitude: this.event.latitude,
+        longitude: this.event.longitude,
+        address: this.event.address
       };
     }
   }
@@ -192,7 +192,7 @@ export class Event implements OnInit, AfterViewChecked {
 
   //Inicializar mapa cuando el DOM esté listo
   ngAfterViewChecked(): void {
-    if (!this.mapInitialized && this.event?.local?.latitude && this.event?.local?.longitude && !this.usuarioEditando && !this.usuarioEliminando) {
+    if (!this.mapInitialized && this.event?.latitude && this.event?.longitude && !this.usuarioEditando && !this.usuarioEliminando) {
       const mapEl = document.getElementById('event-map');
       if (mapEl) {
         this.initMap();
@@ -201,11 +201,11 @@ export class Event implements OnInit, AfterViewChecked {
   }
 
   private initMap(): void {
-    if (!this.event?.local) return;
+    if (!this.event) return;
     this.mapInitialized = true;
 
-    const lat = this.event.local.latitude;
-    const lng = this.event.local.longitude;
+    const lat = this.event.latitude;
+    const lng = this.event.longitude;
 
     // Fix iconos Leaflet
     const defaultIcon = L.icon({

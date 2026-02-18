@@ -37,22 +37,14 @@ export class EventFiltersComponent {
 
   searchByStartDate() {
     if (!this.startDate) return;
-    this.eventService.getEventsByStartDate(this.startDate).subscribe({
-      next: (events) => {
-        this.events = events;
-        this.error = events.length ? '' : 'No hay eventos para esa fecha.';
-      },
-      error: () => {
-        this.events = [];
-        this.error = 'Error al buscar por fecha.';
-      }
-    });
+    // Endpoint de buscar por fecha no existe en backend
+    this.error = 'Filtro de fecha no disponible por el momento.';
   }
 
   searchByCategory() {
     if (!this.category) return;
     this.eventService.getEventsByCategory(this.category).subscribe({
-      next: (events) => {
+      next: (events: Events[]) => {
         this.events = events;
         this.error = events.length ? '' : 'No hay eventos para esa categoría.';
       },
