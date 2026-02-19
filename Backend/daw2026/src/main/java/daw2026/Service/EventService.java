@@ -38,14 +38,23 @@ public class EventService {
     }
 
     public List<Event> findFiltered(Category category, LocalDate date, String search) {
-        if (search != null && !search.trim().isEmpty()) {
-            return eventRepository.searchByText(search.trim());
-        }
-
+        boolean hasSearch = search != null && !search.trim().isEmpty();
         boolean hasCategory = category != null;
         boolean hasDate = date != null;
 
-        if (hasCategory && hasDate) {
+        if (hasSearch && hasCategory && hasDate) {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+            return eventRepository.searchByTextAndCategoryAndDate(search.trim(), category, startOfDay, endOfDay);
+        } else if (hasSearch && hasCategory) {
+            return eventRepository.searchByTextAndCategory(search.trim(), category);
+        } else if (hasSearch && hasDate) {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+            return eventRepository.searchByTextAndDate(search.trim(), startOfDay, endOfDay);
+        } else if (hasSearch) {
+            return eventRepository.searchByText(search.trim());
+        } else if (hasCategory && hasDate) {
             LocalDateTime startOfDay = date.atStartOfDay();
             LocalDateTime endOfDay = date.atTime(23, 59, 59);
             return eventRepository.findByCategoryAndDate(category, startOfDay, endOfDay);

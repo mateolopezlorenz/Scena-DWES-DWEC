@@ -32,7 +32,6 @@ export class EventList implements OnInit {
 
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');
-    // No mostrar filtres si ve amb inputEvents (ex: pàgina de favorits)
     this.showFilters = this.inputEvents === null;
     if (this.inputEvents !== null) {
       this.events = this.inputEvents;

@@ -1,9 +1,11 @@
-import { Component, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, AfterViewInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import { EventService } from '../../services/eventService';
 import { Events } from '../../models';
+
+let mapInstanceId = 0;
 
 @Component({
   selector: 'app-map-view',
@@ -12,25 +14,52 @@ import { Events } from '../../models';
   templateUrl: './map-view.html',
   styleUrls: ['./map-view.scss']
 })
-export class MapView implements AfterViewInit {
+export class MapView implements AfterViewInit, OnChanges, OnDestroy {
   private map: any;
   private selectedMarker: any = null;
-  events: Events[] = [];
+  private markersLayer: L.LayerGroup = L.layerGroup();
+  private _events: Events[] = [];
+
+  mapId: string;
   
   @Input() isInteractive: boolean = false;
+  @Input() events: Events[] | null = null;
   @Output() coordinatesSelected = new EventEmitter<{ latitude: number, longitude: number, address: string }>();
 
-  constructor(private eventService: EventService, private router: Router) {}
+  constructor(private eventService: EventService, private router: Router) {
+    this.mapId = 'map-' + (++mapInstanceId);
+  }
 
   ngAfterViewInit(): void {
-    this.mapaInicial();
-    this.loadEvents();
+    setTimeout(() => {
+      this.mapaInicial();
+      if (this.events !== null) {
+        this._events = this.events;
+        this.agregarMarcadores();
+      } else {
+        this.loadEvents();
+      }
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['events'] && !changes['events'].firstChange && this.map) {
+      this._events = this.events || [];
+      this.agregarMarcadores();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
   }
 
   private loadEvents(): void {
     this.eventService.getAllEvents().subscribe({
       next: (events: Events[]) => {
-        this.events = events;
+        this._events = events;
         this.agregarMarcadores();
       },
       error: (err) => {
@@ -40,7 +69,9 @@ export class MapView implements AfterViewInit {
   }
 
   private agregarMarcadores(): void {
-    this.events.forEach((event) => {
+    this.markersLayer.clearLayers();
+
+    this._events.forEach((event) => {
       const lat = Number(event.latitude);
       const lng = Number(event.longitude);
 
@@ -51,7 +82,7 @@ export class MapView implements AfterViewInit {
         `Fecha: ${new Date(event.startDate).toLocaleDateString('es-ES')}<br>` +
         `<a href="#" class="event-link" data-event-id="${event.id}" style="color: #0066cc; text-decoration: none; font-weight: bold;">Ver más</a>`;
 
-      const marker = L.marker([lat, lng]).addTo(this.map);
+      const marker = L.marker([lat, lng]).addTo(this.markersLayer);
       marker.bindPopup(popupContent);
 
       popupContent.addEventListener('click', (e: any) => {
@@ -69,7 +100,7 @@ export class MapView implements AfterViewInit {
     const northEast = L.latLng(40.05, 3.50);
     const mallorcaBounds = L.latLngBounds(southWest, northEast);
 
-    this.map = L.map('map', {
+    this.map = L.map(this.mapId, {
       center: [39.695, 3.018],
       zoom: 10,
       minZoom: 9.8,
@@ -82,6 +113,8 @@ export class MapView implements AfterViewInit {
       maxZoom: 18,
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
+
+    this.markersLayer.addTo(this.map);
 
     this.fixLeafletIcons();
     if (this.isInteractive) {
