@@ -1,22 +1,13 @@
 package daw2026.Controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import daw2026.Dto.CreateLocalRequest;
 import daw2026.Dto.UpdateLocalRequest;
@@ -39,40 +30,38 @@ public class LocalController {
     private UserRepository userRepository;
 
     // Obtener todos los locales
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Local>> getAllLocals() {
         try {
             List<Local> locals = localService.findAll();
-            return ResponseEntity.status(HttpStatus.OK).body(locals);
-        } catch (Exception e) { 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); 
+            return ResponseEntity.ok(locals);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    // Obtener local por nombre
-    @GetMapping("/searchLocal")
-    public ResponseEntity<Local> getLocalByName(@RequestParam String name) {
+    // Obtener local por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getLocalById(@PathVariable Long id) {
         try {
-            Optional<Local> local = localService.findByName(name);
-            if (local.isPresent()) {
-                return ResponseEntity.status(HttpStatus.OK).body(local.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } catch (Exception e) { 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); 
-
-        }    
+            Local local = localService.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + id + " no encontrado"));
+            return ResponseEntity.ok(local);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    // Obtener locales por usuario
+    // Obtener locales por usuario autenticado
     @GetMapping("/user")
     public ResponseEntity<List<Local>> getLocalsByUser(@AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             List<Local> locals = localService.findByUserId(user.getId());
-            return ResponseEntity.status(HttpStatus.OK).body(locals);
+            return ResponseEntity.ok(locals);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception e) {
@@ -81,28 +70,26 @@ public class LocalController {
     }
 
     // Crear un nuevo local
-    @PostMapping("/createLocal")
-    public ResponseEntity<?> createLocal(@RequestBody CreateLocalRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+    @PostMapping
+    public ResponseEntity<?> createLocal(@RequestBody CreateLocalRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            // Validación de campos obligatorios
             if (request.getName() == null || request.getName().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre del local es obligatorio");
+                return ResponseEntity.badRequest().body("El nombre del local es obligatorio");
             }
             if (request.getUbication() == null || request.getUbication().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La ubicación es obligatoria");
+                return ResponseEntity.badRequest().body("La ubicación es obligatoria");
             }
             if (request.getCapacity() <= 0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La capacidad debe ser mayor a 0");
+                return ResponseEntity.badRequest().body("La capacidad debe ser mayor a 0");
             }
             if (request.getRooms() <= 0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
+                return ResponseEntity.badRequest().body("El número de salas debe ser mayor a 0");
             }
-            
+
             User user = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + userDetails.getUsername()));
-            
-            System.out.println("[DEBUG_LOG] Usuario encontrado: " + user.getEmail() + " con ID: " + user.getId());
-            
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
             Local local = new Local();
             local.setName(request.getName());
             local.setLatitude(request.getLatitude());
@@ -110,52 +97,41 @@ public class LocalController {
             local.setUbication(request.getUbication());
             local.setCapacity(request.getCapacity());
             local.setRooms(request.getRooms());
-            
+
             Local createdLocal = localService.createLocal(user.getId(), local);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdLocal);
         } catch (ResourceNotFoundException e) {
-            System.err.println("[DEBUG_LOG] Error 404: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (LocalAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
-            System.err.println("[DEBUG_LOG] Error 500: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear el local: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear el local: " + e.getMessage());
         }
     }
 
-    // Actualizar un local
-    @PutMapping("/updateLocal/{id}")
-    public ResponseEntity<?> updateLocal(@PathVariable Long id, @RequestBody UpdateLocalRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+    // Actualizar un local (solo el creador)
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateLocal(@PathVariable Long id, @RequestBody UpdateLocalRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            // Validación de campos
             if (request.getName() != null && request.getName().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre no puede estar vacío");
+                return ResponseEntity.badRequest().body("El nombre no puede estar vacío");
             }
             if (request.getUbication() != null && request.getUbication().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La ubicación no puede estar vacía");
+                return ResponseEntity.badRequest().body("La ubicación no puede estar vacía");
             }
-            if (request.getCapacity() != 0 && request.getCapacity() <= 0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La capacidad debe ser mayor a 0");
+            if (request.getCapacity() != null && request.getCapacity() <= 0) {
+                return ResponseEntity.badRequest().body("La capacidad debe ser mayor a 0");
             }
-            if (request.getRooms() != 0 && request.getRooms() <= 0) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de salas debe ser mayor a 0");
+            if (request.getRooms() != null && request.getRooms() <= 0) {
+                return ResponseEntity.badRequest().body("El número de salas debe ser mayor a 0");
             }
-            
+
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-            
-            Local local = new Local();
-            local.setId(id);
-            local.setName(request.getName());
-            local.setLatitude(request.getLatitude());
-            local.setLongitude(request.getLongitude());
-            local.setUbication(request.getUbication());
-            local.setCapacity(request.getCapacity());
-            local.setRooms(request.getRooms());
-            
-            Local updatedLocal = localService.updateLocal(user.getId(), local);
+
+            Local updatedLocal = localService.updateLocal(user.getId(), id, request);
             return ResponseEntity.ok(updatedLocal);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -168,13 +144,14 @@ public class LocalController {
         }
     }
 
-    // Eliminar un local
-    @DeleteMapping("/deleteLocal/{id}")
-    public ResponseEntity<?> deleteLocal(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    // Eliminar un local (solo el creador)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteLocal(@PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-            
+
             localService.deleteLocal(user.getId(), id);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {

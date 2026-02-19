@@ -94,8 +94,8 @@ public class EventController {
             evento.setLongitude(request.getLongitude());
             evento.setAddress(request.getAddress());
 
-            // El servicio se encarga de todas las validaciones
-            Event eventoCreado = eventService.createEvent(user.getId(), evento);
+            
+            Event eventoCreado = eventService.createEvent(user.getId(), evento, request.getLocalId());
             return ResponseEntity.status(HttpStatus.CREATED).body(eventoCreado);
 
         } catch (IllegalArgumentException e) {
@@ -131,7 +131,7 @@ public class EventController {
             eventoDatos.setLongitude(request.getLongitude());
             eventoDatos.setAddress(request.getAddress());
 
-            Event eventoActualizado = eventService.updateEvent(user.getId(), id, eventoDatos);
+            Event eventoActualizado = eventService.updateEvent(user.getId(), id, eventoDatos, request.getLocalId());
             return ResponseEntity.ok(eventoActualizado);
 
         } catch (IllegalArgumentException e) {

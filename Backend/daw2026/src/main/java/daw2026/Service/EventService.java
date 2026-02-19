@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import daw2026.Model.Category;
 import daw2026.Model.Event;
+import daw2026.Model.Local;
 import daw2026.Model.User;
 import daw2026.Repository.EventRepository;
+import daw2026.Repository.LocalRepository;
 import daw2026.Repository.UserRepository;
 import daw2026.exception.ResourceNotFoundException;
 import daw2026.exception.UnauthorizedException;
@@ -22,10 +24,13 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final LocalRepository localRepository;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository,
+            LocalRepository localRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.localRepository = localRepository;
     }
 
     public List<Event> findAllOrderByStartDate() {
@@ -67,7 +72,7 @@ public class EventService {
         return eventRepository.findByName(name);
     }
 
-    public Event createEvent(Long userId, Event event) {
+    public Event createEvent(Long userId, Event event, Long localId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         
@@ -84,12 +89,25 @@ public class EventService {
         if (event.getEndDate().isBefore(event.getStartDate())) {
             throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
         }
-        if (event.getLatitude() == null) {
-            throw new IllegalArgumentException("La latitud es obligatoria");
+
+        // Si se asocia un local
+        if (localId != null) {
+            Local local = localRepository.findById(localId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + localId + " no encontrado"));
+            event.setLocal(local);
+            event.setLatitude(local.getLatitude());
+            event.setLongitude(local.getLongitude());
+            event.setAddress(local.getUbication());
+        } else {
+            // Sin local
+            if (event.getLatitude() == null) {
+                throw new IllegalArgumentException("La latitud es obligatoria");
+            }
+            if (event.getLongitude() == null) {
+                throw new IllegalArgumentException("La longitud es obligatoria");
+            }
         }
-        if (event.getLongitude() == null) {
-            throw new IllegalArgumentException("La longitud es obligatoria");
-        }
+
         if (event.getLatitude().abs().compareTo(BigDecimal.valueOf(90)) > 0) {
             throw new IllegalArgumentException("La latitud debe estar entre -90 y 90");
         }
@@ -101,7 +119,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(Long userId, Long eventId, Event eventDetails) {
+    public Event updateEvent(Long userId, Long eventId, Event eventDetails, Long localId) {
         Event existingEvent = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
         
@@ -125,20 +143,37 @@ public class EventService {
         if (eventDetails.getEndDate() != null) {
             existingEvent.setEndDate(eventDetails.getEndDate());
         }
-        if (eventDetails.getLatitude() != null) {
-            if (eventDetails.getLatitude().abs().compareTo(BigDecimal.valueOf(90)) > 0) {
-                throw new IllegalArgumentException("La latitud debe estar entre -90 y 90");
+        if (localId != null) {
+            if (localId == -1L) {
+                // si quitamosel local las coordenadas quedan iguales pero el evento se queda sin associacion
+                existingEvent.setLocal(null);
+            } else {
+                Local local = localRepository.findById(localId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + localId + " no encontrado"));
+                existingEvent.setLocal(local);
+                existingEvent.setLatitude(local.getLatitude());
+                existingEvent.setLongitude(local.getLongitude());
+                existingEvent.setAddress(local.getUbication());
             }
-            existingEvent.setLatitude(eventDetails.getLatitude());
         }
-        if (eventDetails.getLongitude() != null) {
-            if (eventDetails.getLongitude().abs().compareTo(BigDecimal.valueOf(180)) > 0) {
-                throw new IllegalArgumentException("La longitud debe estar entre -180 y 180");
+
+        // Solo actualizar coordenadas manuales si NO se acaba de asociar un local
+        if (localId == null || localId == -1L) {
+            if (eventDetails.getLatitude() != null) {
+                if (eventDetails.getLatitude().abs().compareTo(BigDecimal.valueOf(90)) > 0) {
+                    throw new IllegalArgumentException("La latitud debe estar entre -90 y 90");
+                }
+                existingEvent.setLatitude(eventDetails.getLatitude());
             }
-            existingEvent.setLongitude(eventDetails.getLongitude());
-        }
-        if (eventDetails.getAddress() != null) {
-            existingEvent.setAddress(eventDetails.getAddress());
+            if (eventDetails.getLongitude() != null) {
+                if (eventDetails.getLongitude().abs().compareTo(BigDecimal.valueOf(180)) > 0) {
+                    throw new IllegalArgumentException("La longitud debe estar entre -180 y 180");
+                }
+                existingEvent.setLongitude(eventDetails.getLongitude());
+            }
+            if (eventDetails.getAddress() != null) {
+                existingEvent.setAddress(eventDetails.getAddress());
+            }
         }
         
         // Validar coherencia de fechas después de actualizar

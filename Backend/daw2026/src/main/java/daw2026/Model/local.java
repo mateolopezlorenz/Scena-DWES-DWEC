@@ -1,5 +1,7 @@
 package daw2026.Model;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -28,11 +30,11 @@ public class Local {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private int latitude;
+    @Column(nullable = false, precision = 10, scale = 8)
+    private BigDecimal latitude;
 
-    @Column(nullable = false)
-    private int longitude;
+    @Column(nullable = false, precision = 11, scale = 8)
+    private BigDecimal longitude;
 
     @Column(nullable = false)
     private String ubication;

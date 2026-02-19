@@ -1,5 +1,7 @@
 package daw2026.Dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class CreateLocalRequest {
     
     private String name;
-    private int latitude;
-    private int longitude;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
     private String ubication;
     private int capacity;
     private int rooms;

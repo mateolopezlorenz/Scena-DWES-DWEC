@@ -21,4 +21,5 @@ public class UpdateEventRequest {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private String address;
+    private Long localId;
 }

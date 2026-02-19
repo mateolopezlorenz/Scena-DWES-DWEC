@@ -1,10 +1,13 @@
 package daw2026.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import daw2026.Dto.UpdateLocalRequest;
 import daw2026.Model.Local;
 import daw2026.Model.User;
 import daw2026.Repository.LocalRepository;
@@ -21,11 +24,16 @@ public class LocalService {
     public LocalService(LocalRepository localRepository, UserRepository userRepository) {
         this.localRepository = localRepository;
         this.userRepository = userRepository;
-        }
+    }
 
     @Transactional(readOnly = true)
     public List<Local> findAll() {
         return localRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Local> findById(Long id) {
+        return localRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
@@ -38,11 +46,10 @@ public class LocalService {
         return localRepository.findByUserId(userId);
     }
 
-    
     public Local createLocal(Long userId, Local local) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario con ID " + userId + " no encontrado."));
-        
+
         if (localRepository.findByName(local.getName()).isPresent()) {
             throw new LocalAlreadyExistsException("El local '" + local.getName() + "' ya existe.");
         }
@@ -50,28 +57,49 @@ public class LocalService {
         return localRepository.save(local);
     }
 
-    public Local updateLocal(Long userId, Local local) {
-        Local existingLocal = localRepository.findById(local.getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + local.getId() + " no encontrado."));
+    public Local updateLocal(Long userId, Long localId, UpdateLocalRequest request) {
+        Local existingLocal = localRepository.findById(localId)
+            .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + localId + " no encontrado."));
+
         if (!existingLocal.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("No tienes permiso para editar este local.");
         }
-        if (!existingLocal.getName().equals(local.getName())) {
-            if (localRepository.findByName(local.getName()).isPresent()) {
-                throw new LocalAlreadyExistsException("El local '" + local.getName() + "' ya existe.");
+
+        // Partial update: solo actualiza los campos que vienen con valor
+        if (request.getName() != null && !request.getName().isEmpty()) {
+            if (!existingLocal.getName().equals(request.getName())) {
+                if (localRepository.findByName(request.getName()).isPresent()) {
+                    throw new LocalAlreadyExistsException("El local '" + request.getName() + "' ya existe.");
+                }
             }
+            existingLocal.setName(request.getName());
         }
-        local.setUser(existingLocal.getUser());
-        return localRepository.save(local);
+        if (request.getLatitude() != null) {
+            existingLocal.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            existingLocal.setLongitude(request.getLongitude());
+        }
+        if (request.getUbication() != null && !request.getUbication().isEmpty()) {
+            existingLocal.setUbication(request.getUbication());
+        }
+        if (request.getCapacity() != null && request.getCapacity() > 0) {
+            existingLocal.setCapacity(request.getCapacity());
+        }
+        if (request.getRooms() != null && request.getRooms() > 0) {
+            existingLocal.setRooms(request.getRooms());
+        }
+
+        return localRepository.save(existingLocal);
     }
 
+    @Transactional
     public void deleteLocal(Long userId, Long id) {
         Local local = localRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + id + " no encontrado."));
         if (!local.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("No tienes permiso para eliminar este local.");
         }
-        
-        localRepository.deleteById(id);
+        localRepository.delete(local);
     }
 }
