@@ -1,6 +1,9 @@
-import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import * as L from 'leaflet';
+import { EventService } from '../../services/eventService';
+import { Events } from '../../models';
 
 @Component({
   selector: 'app-map-view',
@@ -12,16 +15,56 @@ import * as L from 'leaflet';
 export class MapView implements AfterViewInit {
   private map: any;
   private selectedMarker: any = null;
+  events: Events[] = [];
   
+  @Input() isInteractive: boolean = false;
   @Output() coordinatesSelected = new EventEmitter<{ latitude: number, longitude: number, address: string }>();
 
-  constructor() {}
+  constructor(private eventService: EventService, private router: Router) {}
 
   ngAfterViewInit(): void {
-    this.initMap();
+    this.mapaInicial();
+    this.loadEvents();
   }
 
-  private initMap(): void {
+  private loadEvents(): void {
+    this.eventService.getAllEvents().subscribe({
+      next: (events: Events[]) => {
+        this.events = events;
+        this.agregarMarcadores();
+      },
+      error: (err) => {
+        console.error('Error al cargar los eventos:', err);
+      }
+    });
+  }
+
+  private agregarMarcadores(): void {
+    this.events.forEach((event) => {
+      const lat = Number(event.latitude);
+      const lng = Number(event.longitude);
+
+      const popupContent = document.createElement('div');
+      popupContent.innerHTML = 
+        `<b>${event.name}</b><br>` +
+        `Categoría: ${event.category}<br>` +
+        `Fecha: ${new Date(event.startDate).toLocaleDateString('es-ES')}<br>` +
+        `<a href="#" class="event-link" data-event-id="${event.id}" style="color: #0066cc; text-decoration: none; font-weight: bold;">Ver más</a>`;
+
+      const marker = L.marker([lat, lng]).addTo(this.map);
+      marker.bindPopup(popupContent);
+
+      popupContent.addEventListener('click', (e: any) => {
+        if (e.target.classList.contains('event-link')) {
+          e.preventDefault();
+          const eventId = e.target.getAttribute('data-event-id');
+          this.router.navigate(['/event', eventId]);
+        }
+      });
+    });
+  }
+
+  private mapaInicial(): void {
     const southWest = L.latLng(39.20, 2.25);
     const northEast = L.latLng(40.05, 3.50);
     const mallorcaBounds = L.latLngBounds(southWest, northEast);
@@ -41,7 +84,9 @@ export class MapView implements AfterViewInit {
     }).addTo(this.map);
 
     this.fixLeafletIcons();
-    this.addMapClickListener();
+    if (this.isInteractive) {
+      this.addMapClickListener();
+    }
   }
 
   private addMapClickListener(): void {
@@ -53,12 +98,10 @@ export class MapView implements AfterViewInit {
   }
 
   private selectCoordinates(lat: number, lng: number): void {
-    // Remover marcador anterior si existe
     if (this.selectedMarker) {
       this.map.removeLayer(this.selectedMarker);
     }
 
-    // Crear nuevo marcador de selección
     const selectedIcon = L.icon({
       iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-blue.png',
       iconSize: [25, 41],
@@ -72,7 +115,6 @@ export class MapView implements AfterViewInit {
       .addTo(this.map)
       .openPopup();
 
-    // Emitir coordenadas al componente padre
     this.coordinatesSelected.emit({
       latitude: lat,
       longitude: lng,

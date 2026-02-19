@@ -2,7 +2,9 @@ import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EventService } from '../../services/eventService';
 import { UserEventService } from '../../services/userEventService';
+import { LocalService } from '../../services/localService';
 import { Events } from '../../models/eventModel';
+import { Local } from '../../models/localModel';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MapView } from '../map-view/map-view';
@@ -24,6 +26,7 @@ export class Event implements OnInit, AfterViewChecked {
   isLoggedIn: boolean = false;
   liked: boolean = false;
   showEditMapSelector: boolean = false;
+  locals: Local[] = [];
   private map: any = null;
   private mapInitialized: boolean = false;
 
@@ -36,6 +39,7 @@ export class Event implements OnInit, AfterViewChecked {
     latitude: number | null;
     longitude: number | null;
     address: string;
+    localId: number | null;
   } = {
     name: '',
     description: '',
@@ -44,14 +48,22 @@ export class Event implements OnInit, AfterViewChecked {
     endDate: '',
     latitude: null,
     longitude: null,
-    address: ''
+    address: '',
+    localId: null
   };
 
-  constructor(private route: ActivatedRoute, private eventService: EventService, private userEventService: UserEventService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private eventService: EventService, private userEventService: UserEventService, private localService: LocalService, private router: Router) {}
 
   ngOnInit(): void {
     this.isLoggedIn = !!localStorage.getItem('token');
     this.usuarioActivado();
+
+    if (this.isLoggedIn) {
+      this.localService.getLocals().subscribe({
+        next: (data: Local[]) => this.locals = data,
+        error: (err) => console.error('Error al cargar locales', err)
+      });
+    }
 
     this.route.params.subscribe(params => {
       this.eventId = params['id'];
@@ -122,8 +134,20 @@ export class Event implements OnInit, AfterViewChecked {
         endDate: this.event.endDate,
         latitude: this.event.latitude,
         longitude: this.event.longitude,
-        address: this.event.address
+        address: this.event.address,
+        localId: this.event.local ? this.event.local.id : null
       };
+    }
+  }
+
+  onEditLocalSelected() {
+    if (this.editedEvent.localId) {
+      const local = this.locals.find(l => l.id === +this.editedEvent.localId!);
+      if (local) {
+        this.editedEvent.latitude = local.latitude;
+        this.editedEvent.longitude = local.longitude;
+        this.editedEvent.address = local.ubication;
+      }
     }
   }
 
@@ -238,9 +262,13 @@ export class Event implements OnInit, AfterViewChecked {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
+    const popupContent = this.event.local
+      ? `<b>${this.event.local.name}</b><br>${this.event.local.ubication}`
+      : `<b>${this.event.name}</b><br>${this.event.address}`;
+
     L.marker([lat, lng])
       .addTo(this.map)
-      .bindPopup(`<b>${this.event.local.name}</b><br>${this.event.local.ubication}`)
+      .bindPopup(popupContent)
       .openPopup();
   }
 }

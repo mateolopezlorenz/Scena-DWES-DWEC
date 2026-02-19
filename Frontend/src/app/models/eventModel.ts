@@ -12,6 +12,6 @@ export interface Events {
   longitude: number;
   address: string;
   user: User;
-  local: Local;
+  local: Local | null;
 }
 

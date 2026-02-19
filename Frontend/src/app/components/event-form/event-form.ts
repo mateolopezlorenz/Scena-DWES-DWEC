@@ -25,7 +25,8 @@ export class EventForm {
     endDate: '',
     latitude: null as number | null,
     longitude: null as number | null,
-    address: ''
+    address: '',
+    localId: null as number | null
   };
 
   constructor(private eventService: EventService, private router: Router) {}

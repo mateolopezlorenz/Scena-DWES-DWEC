@@ -2,13 +2,15 @@
 
     <h1>{{ title }}</h1>
 
+  <app-map-view></app-map-view>
+
   <event-filters *ngIf="showFilters" (filtersChanged)="onFiltersChanged($event)"></event-filters>
 
   <div *ngFor="let event of events" class="event-card">
     <h2>{{ event.name }}</h2>
     <p><strong>Categoria:</strong> {{ event.category }}</p>
     <p><strong>Data:</strong> {{ event.startDate }}</p>
-    <p><strong>Adreça:</strong> {{ event.local.ubication }}</p>
+    <p><strong>Adreça:</strong> {{ event.local?.ubication || event.address }}</p>
     <div class="event-actions">
       <button (click)="viewEvent(event.id)">Ver detalles del evento</button>
       <button *ngIf="isLoggedIn" (click)="toggleLike(event.id)" class="like-btn" [class.liked]="isLiked(event.id)">

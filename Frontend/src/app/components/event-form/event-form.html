@@ -30,6 +30,13 @@
     </div>
     <br>
 
+    <label for="local">Asociar a un Local (opcional):</label>
+    <select id="local" name="localId" [(ngModel)]="eventData.localId" (change)="onLocalSelected()">
+      <option [ngValue]="null">-- Sin local --</option>
+      <option *ngFor="let local of locals" [ngValue]="local.id">{{ local.name }} - {{ local.ubication }}</option>
+    </select>
+    <br>
+
     <label for="latitude">Latitud:</label>
     <input type="number" id="latitude" name="latitude" [(ngModel)]="eventData.latitude" min="-90" max="90" step="0.0001" required>
     <br>
@@ -44,7 +51,7 @@
     <br>
 
     <div *ngIf="showMapSelector" style="width:100%;height:400px;margin:15px 0;border:1px solid #ccc;">
-      <app-map-view (coordinatesSelected)="onCoordinatesSelected($event)"></app-map-view>
+      <app-map-view [isInteractive]="true" (coordinatesSelected)="onCoordinatesSelected($event)"></app-map-view>
     </div>
     <br>
 
@@ -54,7 +61,4 @@
 
     <button type="submit" [disabled]="!eventForm.form.valid || (eventData.startDate && eventData.endDate && eventData.endDate < eventData.startDate)">Crear Evento</button>
   </form>
-
-
 </div>
-

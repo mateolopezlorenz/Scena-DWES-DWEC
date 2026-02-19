@@ -6,6 +6,7 @@
   <p><strong>Fecha Inicio:</strong> {{ event.startDate }}</p>
   <p><strong>Fecha Fin:</strong> {{ event.endDate }}</p>
   <p><strong>Dirección:</strong> {{ event.address }}</p>
+  <p *ngIf="event.local"><strong>Local:</strong> {{ event.local.name }}</p>
   <p><strong>Usuario:</strong> {{ event.user?.name }}</p>
 
   <div *ngIf="event.latitude && event.longitude" style="width:100%;height:400px;margin:15px 0;">
@@ -63,6 +64,14 @@
     <div>
       <label>Fecha de Fin: </label>
       <input type="datetime-local" [(ngModel)]="editedEvent.endDate" name="endDate" required/>
+    </div>
+
+    <div>
+      <label>Asociar a un Local (opcional): </label>
+      <select [(ngModel)]="editedEvent.localId" name="localId" (change)="onEditLocalSelected()">
+        <option [ngValue]="null">-- Sin local --</option>
+        <option *ngFor="let local of locals" [ngValue]="local.id">{{ local.name }} - {{ local.ubication }}</option>
+      </select>
     </div>
 
     <div>
