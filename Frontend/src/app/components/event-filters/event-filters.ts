@@ -1,8 +1,12 @@
-import { Component } from '@angular/core';
-import { EventService } from '../../services/eventService';
-import { Events } from '../../models';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+export interface EventFilters {
+  category: string;
+  date: string;
+  search: string;
+}
 
 @Component({
   selector: 'event-filters',
@@ -12,51 +16,24 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./event-filters.scss']
 })
 export class EventFiltersComponent {
-  name: string = '';
-  startDate: string = '';
   category: string = '';
+  date: string = '';
+  search: string = '';
 
-  events: Events[] = [];
-  error: string = '';
+  @Output() filtersChanged = new EventEmitter<EventFilters>();
 
-  constructor(private eventService: EventService) {}
-
-  searchByName() {
-    if (!this.name) return;
-    this.eventService.getEventByName(this.name).subscribe({
-      next: (event) => {
-        this.events = event ? [event] : [];
-        this.error = this.events.length ? '' : 'No se encontró ningún evento con ese nombre.';
-      },
-      error: () => {
-        this.events = [];
-        this.error = 'No se encontró ningún evento con ese nombre.';
-      }
+  applyFilters() {
+    this.filtersChanged.emit({
+      category: this.category,
+      date: this.date,
+      search: this.search
     });
   }
 
-  searchByStartDate() {
-    if (!this.startDate) return;
-    // Endpoint de buscar por fecha no existe en backend
-    this.error = 'Filtro de fecha no disponible por el momento.';
-  }
-
-  searchByCategory() {
-    if (!this.category) return;
-    this.eventService.getEventsByCategory(this.category).subscribe({
-      next: (events: Events[]) => {
-        this.events = events;
-        this.error = events.length ? '' : 'No hay eventos para esa categoría.';
-      },
-      error: () => {
-        this.events = [];
-        this.error = 'Error al buscar por categoría.';
-      }
-    });
-  }
-
-  clearResults() {
-    this.events = [];
-    this.error = '';
+  resetFilters() {
+    this.category = '';
+    this.date = '';
+    this.search = '';
+    this.filtersChanged.emit({ category: '', date: '', search: '' });
   }
 }

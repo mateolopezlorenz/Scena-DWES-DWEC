@@ -4,10 +4,11 @@ import { EventService } from '../../services/eventService';
 import { UserEventService } from '../../services/userEventService';
 import { Events } from '../../models/eventModel';
 import { CommonModule } from '@angular/common';
+import { EventFiltersComponent, EventFilters } from '../event-filters/event-filters';
 
 @Component({
   selector: 'event-list',
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, EventFiltersComponent],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.scss'],
 })
@@ -20,6 +21,7 @@ export class EventList implements OnInit {
   isLoggedIn = false;
   likeCounts: { [eventId: number]: number } = {};
   likedEventIds: Set<number> = new Set();
+  showFilters = true;
 
   constructor(
     private eventService: EventService,
@@ -29,6 +31,8 @@ export class EventList implements OnInit {
 
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');
+    // No mostrar filtres si ve amb inputEvents (ex: pàgina de favorits)
+    this.showFilters = this.inputEvents === null;
     if (this.inputEvents !== null) {
       this.events = this.inputEvents;
       this.loadLikeCounts();
@@ -50,6 +54,24 @@ export class EventList implements OnInit {
         }
       },
       error: (err) => console.error('Error al cargar los eventos', err)
+    });
+  }
+
+  onFiltersChanged(filters: EventFilters) {
+    const hasFilters = filters.category || filters.date || filters.search;
+    if (!hasFilters) {
+      this.loadEvents();
+      return;
+    }
+    this.eventService.getFilteredEvents(filters).subscribe({
+      next: (data: Events[]) => {
+        this.events = this.sortEventsByDate(data);
+        this.loadLikeCounts();
+        if (this.isLoggedIn) {
+          this.loadUserLikes();
+        }
+      },
+      error: (err) => console.error('Error al filtrar los eventos', err)
     });
   }
 

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Events } from '../models';
@@ -20,6 +20,21 @@ export class EventService {
   //Método para obtener todos los eventos.
   getAllEvents(): Observable<Events[]> {
     return this.http.get<Events[]>(`${this.url}`);
+  }
+
+  //Método para obtener eventos filtrados con query params.
+  getFilteredEvents(filters: { category?: string; date?: string; search?: string }): Observable<Events[]> {
+    let params = new HttpParams();
+    if (filters.category) {
+      params = params.set('category', filters.category);
+    }
+    if (filters.date) {
+      params = params.set('date', filters.date);
+    }
+    if (filters.search) {
+      params = params.set('search', filters.search);
+    }
+    return this.http.get<Events[]>(`${this.url}`, { params });
   }
 
   //Método para obtener un evento por id.
