@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 
 import daw2026.Model.User;
 import daw2026.Repository.UserRepository;
-import daw2026.exception.ResourceNotFoundException;
-import daw2026.exception.UserAlreadyExistsException;
 
 @Service
 public class UserService {
@@ -31,17 +29,4 @@ public class UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-
-    //Método para actualizar un usuario existente
-    public User updateUser(User user) {
-    Optional<User> existingUser = userRepository.findById(user.getId());
-    if (existingUser.isEmpty()) {
-        throw new ResourceNotFoundException("Usuario con ID " + user.getId() + " no encontrado.");
-    }
-    if (!existingUser.get().getEmail().equals(user.getEmail())) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("El email '" + user.getEmail() + "' ya está registrado.");
-        }
-    } 
-    return userRepository.save(user);}
 }
