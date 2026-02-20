@@ -9,6 +9,7 @@ body {
   align-items: center;
   margin-top: 10px;
   color: white;
+  background-color: #AB3788;
 }
 
 a{
@@ -68,10 +69,11 @@ input{
 }
 
 .map-container {
-  width: 100%;
-  aspect-ratio: 1;
+  width: 670px;
+  max-width: 900px;
+  height: 60vh;
   position: relative;
-  z-index: 1;
+  margin: 0 auto;
 
   > div {
     width: 100%;
@@ -79,6 +81,24 @@ input{
   }
 }
 
+.event-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
+.filters-container{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.form{
+    display: grid;
+    gap: 1rem;
+}
 
 //PALETA DE COLORES PARA UTILIZAR
 
