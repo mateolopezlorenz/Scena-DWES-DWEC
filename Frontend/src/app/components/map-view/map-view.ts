@@ -1,5 +1,4 @@
 import { Component, AfterViewInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import { EventService } from '../../services/eventService';
@@ -10,7 +9,7 @@ let mapInstanceId = 0;
 @Component({
   selector: 'app-map-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './map-view.html',
   styleUrls: ['./map-view.scss']
 })

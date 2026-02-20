@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewChecked } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../services/eventService';
 import { UserEventService } from '../../services/userEventService';
 import { LocalService } from '../../services/localService';
@@ -12,7 +12,7 @@ import * as L from 'leaflet';
 
 @Component({
   selector: 'app-event',
-  imports: [RouterModule, CommonModule, FormsModule, MapView],
+  imports: [CommonModule, FormsModule, MapView],
   templateUrl: './event.html',
   styleUrls: ['./event.scss'],
 })

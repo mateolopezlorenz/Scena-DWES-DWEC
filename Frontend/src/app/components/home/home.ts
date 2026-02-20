@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { Authservice } from '../../services/authservice';
 
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [CommonModule],
   templateUrl: './home.html',
   styleUrls: ['./home.scss'],
 })
@@ -14,14 +12,7 @@ export class Home {
 
   username: string | null = '';
 
-  constructor(private authservice: Authservice, private router: Router) {}
-
-    ngOnInit() {
-      this.username = localStorage.getItem('name');
-    }
-
-    logout() {
-      this.authservice.logout();
-      this.router.navigate(['/login'])
-    }
+  ngOnInit() {
+    this.username = localStorage.getItem('name');
+  }
 }

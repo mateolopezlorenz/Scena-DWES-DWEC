@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { EventService } from '../../services/eventService';
 import { UserEventService } from '../../services/userEventService';
 import { Events } from '../../models/eventModel';
@@ -9,7 +9,7 @@ import { MapView } from '../map-view/map-view';
 
 @Component({
   selector: 'event-list',
-  imports: [RouterModule, CommonModule, EventFiltersComponent, MapView],
+  imports: [CommonModule, EventFiltersComponent, MapView],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.scss'],
 })

@@ -5,8 +5,8 @@ export interface UpdateEventRequest {
   category: string;
   startDate: string;
   endDate: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   address: string;
   localId: number | null;
 }

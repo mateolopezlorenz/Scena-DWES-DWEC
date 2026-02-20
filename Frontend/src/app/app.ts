@@ -1,18 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
-import { Authservice } from './services/authservice';
-import { CommonModule } from '@angular/common';
-import { MapView } from './components/map-view/map-view';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, CommonModule, MapView],
+  imports: [RouterOutlet, Navbar],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']
 })
-export class App {
-
-  constructor(public authService: Authservice) {}
-}
+export class App {}

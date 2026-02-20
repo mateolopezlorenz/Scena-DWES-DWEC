@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { LocalService } from '../../services/localService';
 import { Local } from '../../models';
 
@@ -27,7 +26,7 @@ export class LocalList implements OnInit {
     rooms: 1
   };
 
-  constructor(private localService: LocalService, private router: Router) {}
+  constructor(private localService: LocalService) {}
 
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');

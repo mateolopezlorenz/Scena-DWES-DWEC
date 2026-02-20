@@ -1,6 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 
 export interface EventFilters {
   category: string;
@@ -11,7 +10,7 @@ export interface EventFilters {
 @Component({
   selector: 'event-filters',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule],
   templateUrl: './event-filters.html',
   styleUrls: ['./event-filters.scss']
 })
