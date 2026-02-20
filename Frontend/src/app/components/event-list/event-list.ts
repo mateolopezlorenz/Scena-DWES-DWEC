@@ -36,9 +36,7 @@ export class EventList implements OnInit {
     if (this.inputEvents !== null) {
       this.events = this.inputEvents;
       this.loadLikeCounts();
-      if (this.isLoggedIn) {
-        this.loadUserLikes();
-      }
+      this.loadUserLikes();
     } else {
       this.loadEvents();
     }
@@ -49,9 +47,7 @@ export class EventList implements OnInit {
       next: (data: Events[]) => {
         this.events = this.sortEventsByDate(data);
         this.loadLikeCounts();
-        if (this.isLoggedIn) {
-          this.loadUserLikes();
-        }
+        this.loadUserLikes();
       },
       error: (err) => console.error('Error al cargar los eventos', err)
     });
@@ -67,9 +63,7 @@ export class EventList implements OnInit {
       next: (data: Events[]) => {
         this.events = this.sortEventsByDate(data);
         this.loadLikeCounts();
-        if (this.isLoggedIn) {
-          this.loadUserLikes();
-        }
+        this.loadUserLikes();
       },
       error: (err) => console.error('Error al filtrar los eventos', err)
     });
@@ -86,38 +80,51 @@ export class EventList implements OnInit {
   loadLikeCounts() {
     for (const event of this.events) {
       this.userEventService.countLikes(event.id).subscribe({
-        next: (res) => this.likeCounts[event.id] = res.likes,
+        next: (res) => {
+          // Sumar los MG de invitado (pueden ser varios)
+          const guestExtra = this.userEventService.getGuestLikeCount(event.id);
+          this.likeCounts[event.id] = res.likes + guestExtra;
+        },
         error: () => this.likeCounts[event.id] = 0
       });
     }
   }
 
   loadUserLikes() {
-    this.userEventService.getLikedByUser().subscribe({
-      next: (likedEvents: Events[]) => {
-        this.likedEventIds = new Set(likedEvents.map(e => e.id));
-      },
-      error: () => this.likedEventIds = new Set()
-    });
+    if (this.isLoggedIn) {
+      this.userEventService.getLikedByUser().subscribe({
+        next: (likedEvents: Events[]) => {
+          this.likedEventIds = new Set(likedEvents.map(e => e.id));
+        },
+        error: () => this.likedEventIds = new Set()
+      });
+    }
   }
 
   toggleLike(eventId: number) {
-    if (this.isLiked(eventId)) {
-      this.userEventService.removeLike(eventId).subscribe({
-        next: () => {
-          this.likedEventIds.delete(eventId);
-          this.likeCounts[eventId] = Math.max((this.likeCounts[eventId] || 0) - 1, 0);
-        },
-        error: (err) => console.error('Error al quitar like', err)
-      });
+    if (this.isLoggedIn) {
+      // Usuario registrado: toggle via API
+      if (this.isLiked(eventId)) {
+        this.userEventService.removeLike(eventId).subscribe({
+          next: () => {
+            this.likedEventIds.delete(eventId);
+            this.likeCounts[eventId] = Math.max((this.likeCounts[eventId] || 0) - 1, 0);
+          },
+          error: (err) => console.error('Error al quitar like', err)
+        });
+      } else {
+        this.userEventService.addLike(eventId).subscribe({
+          next: () => {
+            this.likedEventIds.add(eventId);
+            this.likeCounts[eventId] = (this.likeCounts[eventId] || 0) + 1;
+          },
+          error: (err) => console.error('Error al dar like', err)
+        });
+      }
     } else {
-      this.userEventService.addLike(eventId).subscribe({
-        next: () => {
-          this.likedEventIds.add(eventId);
-          this.likeCounts[eventId] = (this.likeCounts[eventId] || 0) + 1;
-        },
-        error: (err) => console.error('Error al dar like', err)
-      });
+      // Usuario no registrado: cada clic suma +1 sin límite
+      this.userEventService.addGuestLike(eventId);
+      this.likeCounts[eventId] = (this.likeCounts[eventId] || 0) + 1;
     }
   }
 

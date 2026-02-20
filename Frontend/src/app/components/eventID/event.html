@@ -16,6 +16,9 @@
   <button *ngIf="isLoggedIn" (click)="toggleLike()" [class.liked]="liked">
     {{ liked ? '&#10084; Ja no m\'agrada' : '&#9825; M\'agrada' }}
   </button>
+  <button *ngIf="!isLoggedIn" (click)="toggleLike()" class="like-btn">
+    &#9829; +MG ({{ guestLikeCount }})
+  </button>
 
   <div *ngIf="esCreador()">
     <button (click)="showEditForm()">Editar</button>

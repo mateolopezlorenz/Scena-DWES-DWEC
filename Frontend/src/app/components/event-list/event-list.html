@@ -16,7 +16,9 @@
       <button *ngIf="isLoggedIn" (click)="toggleLike(event.id)" class="like-btn" [class.liked]="isLiked(event.id)">
         {{ isLiked(event.id) ? '&#9829;' : '&#9825;' }} MG ({{ likeCounts[event.id] || 0 }})
       </button>
-      <span *ngIf="!isLoggedIn" class="like-count">&#9825; MG ({{ likeCounts[event.id] || 0 }})</span>
+      <button *ngIf="!isLoggedIn" (click)="toggleLike(event.id)" class="like-btn">
+        &#9829; +MG ({{ likeCounts[event.id] || 0 }})
+      </button>
     </div>
   </div>
 

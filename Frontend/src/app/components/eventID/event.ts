@@ -85,36 +85,48 @@ export class Event implements OnInit, AfterViewChecked {
         next: (data: Events) => {
           this.event = data;
           this.datosDeInicio();
-          if (this.isLoggedIn) {
-            this.loadLikeStatus();
-          }
+          this.loadLikeStatus();
         },
         error: (err) => console.error('Error al cargar el evento', err)
       });
     }
   }
 
+  guestLikeCount: number = 0;
+
   loadLikeStatus(): void {
-    this.userEventService.getLikedByUser().subscribe({
-      next: (likedEvents: Events[]) => {
-        this.liked = likedEvents.some(e => e.id === this.event?.id);
-      },
-      error: () => this.liked = false
-    });
+    if (this.isLoggedIn) {
+      this.userEventService.getLikedByUser().subscribe({
+        next: (likedEvents: Events[]) => {
+          this.liked = likedEvents.some(e => e.id === this.event?.id);
+        },
+        error: () => this.liked = false
+      });
+    }
+    // Cargar los MG de invitado para este evento
+    if (this.event) {
+      this.guestLikeCount = this.userEventService.getGuestLikeCount(this.event.id);
+    }
   }
 
   toggleLike(): void {
     if (!this.event) return;
-    if (this.liked) {
-      this.userEventService.removeLike(this.event.id).subscribe({
-        next: () => this.liked = false,
-        error: (err) => console.error('Error al quitar like', err)
-      });
+    if (this.isLoggedIn) {
+      // Usuario registrado: toggle via API
+      if (this.liked) {
+        this.userEventService.removeLike(this.event.id).subscribe({
+          next: () => this.liked = false,
+          error: (err) => console.error('Error al quitar like', err)
+        });
+      } else {
+        this.userEventService.addLike(this.event.id).subscribe({
+          next: () => this.liked = true,
+          error: (err) => console.error('Error al dar like', err)
+        });
+      }
     } else {
-      this.userEventService.addLike(this.event.id).subscribe({
-        next: () => this.liked = true,
-        error: (err) => console.error('Error al dar like', err)
-      });
+      // Usuario no registrado: cada clic suma +1 sin límite
+      this.guestLikeCount = this.userEventService.addGuestLike(this.event.id);
     }
   }
 

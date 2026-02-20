@@ -31,7 +31,12 @@ export class Authservice {
 
   // Método para cerrar sesión.
   logout(): void {
+    // Preservar los likes de invitado antes de limpiar
+    const guestLikes = localStorage.getItem('guest_liked_events');
     localStorage.clear();
+    if (guestLikes) {
+      localStorage.setItem('guest_liked_events', guestLikes);
+    }
     this.isLoggedIn = false;
   }
 

@@ -10,15 +10,16 @@ export class UserEventService {
 
   private eventsUrl = 'http://localhost:8080/api/events';
   private usersUrl = 'http://localhost:8080/api/users';
+  private localStorageKey = 'guest_liked_events';
 
   constructor(private http: HttpClient) {}
 
-  // Añadir evento a favoritos
+  // Añadir evento a favoritos (usuario registrado)
   addLike(eventId: number): Observable<any> {
     return this.http.post<any>(`${this.eventsUrl}/${eventId}/like`, {});
   }
 
-  // Eliminar evento de favoritos
+  // Eliminar evento de favoritos (usuario registrado)
   removeLike(eventId: number): Observable<any> {
     return this.http.delete<any>(`${this.eventsUrl}/${eventId}/like`);
   }
@@ -31,5 +32,29 @@ export class UserEventService {
   // Obtener eventos favoritos del usuario autenticado
   getLikedByUser(): Observable<any[]> {
     return this.http.get<any[]>(`${this.usersUrl}/me/likes`);
+  }
+
+  // ---- Métodos para likes de usuarios NO registrados (localStorage) ----
+  // Se guarda un mapa { eventId: cantidad } para permitir MG ilimitados
+
+  getGuestLikeCounts(): { [eventId: number]: number } {
+    try {
+      const stored = localStorage.getItem(this.localStorageKey);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (_) {}
+    return {};
+  }
+
+  getGuestLikeCount(eventId: number): number {
+    return this.getGuestLikeCounts()[eventId] || 0;
+  }
+
+  addGuestLike(eventId: number): number {
+    const counts = this.getGuestLikeCounts();
+    counts[eventId] = (counts[eventId] || 0) + 1;
+    localStorage.setItem(this.localStorageKey, JSON.stringify(counts));
+    return counts[eventId];
   }
 }
