@@ -1,0 +1,30 @@
+.navbar {
+  background-color: #A01576;
+}
+
+.btn-nav {
+  background-color: white;
+  color: #6D004C;
+  font-weight: 600;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 18px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+    color: #510039;
+    transform: scale(1.05);
+  }
+}
+
+.btn-logout {
+  background-color: #510039;
+  color: white;
+
+  &:hover {
+    background-color: #3a0028;
+    color: white;
+  }
+}

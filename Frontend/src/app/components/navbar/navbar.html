@@ -1,13 +1,15 @@
-<nav class="navbar">
-  <span *ngIf="username">Hola, {{ username }}</span>
-  <button *ngIf="username" (click)="logout()">Logout</button>
-  <br>
-  
-  <a *ngIf="!username" routerLink="/register">Crear sesión</a>
-  <a *ngIf="!username" routerLink="/login">Iniciar sesión</a>
-  <a *ngIf="username" routerLink="/event">Crear evento</a>
-  <a *ngIf="username" routerLink="/local">Crear local</a>
-  <a routerLink="/local-list">Ver locales</a>
-  <a routerLink="/event-list">Ver lista de eventos</a>
-  <a *ngIf="username" routerLink="/user-likes">Ver mis MG</a>
+<nav class="navbar navbar-expand w-100 rounded-pill px-3 py-2 mb-3">
+  <div class="container-fluid d-flex justify-content-center align-items-center flex-wrap gap-2">
+    <span *ngIf="username" class="navbar-text text-white fw-bold me-2">Hola, {{ username }}</span>
+
+    <a *ngIf="!username" routerLink="/register" class="btn btn-nav">Crear sesión</a>
+    <a *ngIf="!username" routerLink="/login" class="btn btn-nav">Iniciar sesión</a>
+    <a *ngIf="username" routerLink="/event" class="btn btn-nav">Crear evento</a>
+    <a *ngIf="username" routerLink="/local" class="btn btn-nav">Crear local</a>
+    <a routerLink="/local-list" class="btn btn-nav">Ver locales</a>
+    <a routerLink="/event-list" class="btn btn-nav">Ver eventos</a>
+    <a *ngIf="username" routerLink="/user-likes" class="btn btn-nav">Mis MG</a>
+
+    <button *ngIf="username" (click)="logout()" class="btn btn-nav btn-logout">Logout</button>
+  </div>
 </nav>
