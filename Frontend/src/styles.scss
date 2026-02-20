@@ -13,7 +13,11 @@ body {
 
 a{
     color: #fff;
-    text-decoration: none;
+    text-decoration: none;  
+}
+
+a:hover{
+    color: orange;
 }
 
 button{
@@ -29,7 +33,6 @@ button{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
     background-color: #A01576;
     padding: 20px;
     border-radius: 50px;
@@ -42,10 +45,43 @@ button{
     align-items: center;
     justify-content: center;
     width: 70vw;
-    height: 70vh;
+    min-height: 70vh;
     background-color: #A01576;
     border-radius: 50px;
+    margin-bottom: 15px;
+    padding: 15px;
 }
+
+.containerHome{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input{
+    background-color: #84085F;
+    border: 1px solid black;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.map-container {
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+  z-index: 1;
+
+  > div {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+//PALETA DE COLORES PARA UTILIZAR
+
 // AB3788
 // A01576
 // 84085F

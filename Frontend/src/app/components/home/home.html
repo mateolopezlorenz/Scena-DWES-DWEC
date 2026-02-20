@@ -1,4 +1,5 @@
-<div class="container">
-    <h1>bienvenido a scena</h1>
-    <h2 *ngIf="username">Hola {{ username }}</h2>
+<div class="container containerHome">
+    <h1 *ngIf="!username">¡Bienvenido a Scena!</h1>    
+    <h1 *ngIf="username">¡Bienvenido a Scena {{ username }}!</h1>
+    <p>Aquí puedes explorar y ver los siguientes eventos que tenemos disponibles.</p>
 </div>
