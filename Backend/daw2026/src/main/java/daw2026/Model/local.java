@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Local {
-
+    // Atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,7 +44,8 @@ public class Local {
 
     @Column(nullable = false)
     private int rooms;
-
+    
+    // Relación con User
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnoreProperties({ "events", "locals" })

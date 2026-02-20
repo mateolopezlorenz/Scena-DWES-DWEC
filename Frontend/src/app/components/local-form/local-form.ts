@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Authservice } from '../../services/authservice';
+import { Router } from '@angular/router';
 import { LocalService } from '../../services/localService';
 import { FormsModule } from '@angular/forms';
 
@@ -12,7 +12,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class LocalForm {
 
-  //Datos del local que se enviarán al backend.
   localData = {
     name: '',
     latitude: 0,
@@ -22,17 +21,17 @@ export class LocalForm {
     rooms: 1
   };
 
-  constructor(private authService: Authservice, private localService: LocalService ) {}
+  constructor(private localService: LocalService, private router: Router) {}
 
-  onSubmit() {    
+  onSubmit() {
     this.localService.crearLocal(this.localData).subscribe({
-      next: (res: any) => {
-        console.log('Local creado correctamente', res);
+      next: () => {
         alert('Local creado con éxito');
+        this.router.navigate(['/local-list']);
       },
       error: (err: any) => {
-        console.error('Error al crear el local', err);
-        alert('Error al crear el local: ' + (err.error?.message || err.message));
+        const msg = err.error?.message || err.statusText || 'Error desconocido';
+        alert('Error al crear el local: ' + msg);
       }
     });
   }

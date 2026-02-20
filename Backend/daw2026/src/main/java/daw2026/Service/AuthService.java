@@ -33,6 +33,7 @@ public class AuthService {
         this.userDetailsService = userDetailsService;
     }
 
+    // Método para registrar un nuevo usuario
     public Map<String, Object> register(User nuevoUsuario) {
         if (userRepository.existsByEmail(nuevoUsuario.getEmail())) {
             throw new UserAlreadyExistsException("El email '" + nuevoUsuario.getEmail() + "' ya está registrado.");
@@ -49,6 +50,7 @@ public class AuthService {
         return response;
     }
     
+    // Método para autenticar un usuario y generar un token JWT
     public LoginResponse login(String email, String password) {
 
         try {

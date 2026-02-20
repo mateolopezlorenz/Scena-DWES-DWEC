@@ -171,27 +171,6 @@ public class EventController {
         }
     }
 
-    // Filtrar eventos por categoría
-    @GetMapping("/category/{category}")
-    public List<Event> getEventsByCategory(@PathVariable Category category) {
-        return eventService.findByCategory(category);
-    }
-
-    // Buscar evento por nombre
-    @GetMapping("/search/{name}")
-    public ResponseEntity<Event> getEventByName(@PathVariable String name) {
-        try {
-            Optional<Event> evento = eventService.findByName(name);
-            if (evento.isPresent()) {
-                return ResponseEntity.ok(evento.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     // Añadir evento a favoritos (like)
     @PostMapping("/{id}/like")
     public ResponseEntity<?> addLike(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {

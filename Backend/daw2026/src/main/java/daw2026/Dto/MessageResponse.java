@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+// DTO genérico para devolver mensajes de éxito o error
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

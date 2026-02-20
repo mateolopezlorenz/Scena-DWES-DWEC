@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// DTO para recibir los datos al crear un evento
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

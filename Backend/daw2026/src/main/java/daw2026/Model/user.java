@@ -39,6 +39,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    // No se expone la contraseña en las respuestas JSON
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
@@ -47,14 +48,17 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-  
+    // Indica si el usuario está  activo o no 
     @JsonIgnore
     @Column(nullable = false)
     private Boolean enabled = true;
 
+    // Relación con Event
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({ "user", "local" })
     private List<Event> events = new ArrayList<>();
+
+    // Relación con Local
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({ "user", "events" })
     private List<Local> locals = new ArrayList<>();

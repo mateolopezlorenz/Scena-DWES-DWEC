@@ -25,7 +25,7 @@ public class UserEventService {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
     }
-
+    // Métodos para manejar likes de eventos por parte de usuarios
     public UserEvent addLike(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario con ID " + userId + " no encontrado."));
@@ -36,13 +36,14 @@ public class UserEventService {
         if (existing.isPresent()) {
             throw new IllegalArgumentException("Ya has dado like a este evento.");
         }
-
+        
         UserEvent userEvent = new UserEvent();
         userEvent.setUser(user);
         userEvent.setEvent(event);
         return userEventRepository.save(userEvent);
     }
-
+    
+    // Eliminar un like de un evento por parte de un usuario
     @Transactional
     public void removeLike(Long userId, Long eventId) {
         if (!userRepository.existsById(userId)) {
@@ -58,14 +59,11 @@ public class UserEventService {
         userEventRepository.deleteByUserIdAndEventId(userId, eventId);
     }
 
-    public boolean isLiked(Long userId, Long eventId) {
-        return userEventRepository.findByUserIdAndEventId(userId, eventId).isPresent();
-    }
-
+    // Contar el número de likes de un evento
     public long countLikes(Long eventId) {
         return userEventRepository.countByEventId(eventId);
     }
-
+    // Obtener la lista de eventos a los que un usuario ha dado like
     public List<Event> findLikedEventsByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("Usuario con ID " + userId + " no encontrado.");

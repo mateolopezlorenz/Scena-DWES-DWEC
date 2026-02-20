@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EventService } from '../../services/eventService';
+import { LocalService } from '../../services/localService';
+import { Local } from '../../models';
 import { MapView } from '../map-view/map-view';
 
 @Component({
@@ -12,9 +14,10 @@ import { MapView } from '../map-view/map-view';
   templateUrl: './event-form.html',
   styleUrls: ['./event-form.scss'],
 })
-export class EventForm {
-  
+export class EventForm implements OnInit {
+
   showMapSelector: boolean = false;
+  locals: Local[] = [];
 
   //Datos del evento que se enviarán al backend
   eventData = {
@@ -29,9 +32,19 @@ export class EventForm {
     localId: null as number | null
   };
 
-  constructor(private eventService: EventService, private router: Router) {}
+  constructor(
+    private eventService: EventService,
+    private localService: LocalService,
+    private router: Router
+  ) {}
 
-  //Método que envía los datos registrados para poder crear el evento.
+  ngOnInit() {
+    this.localService.getLocals().subscribe({
+      next: (data) => this.locals = data,
+      error: (err) => console.error('Error al cargar locales:', err)
+    });
+  }
+
   onSubmit() {
     this.eventService.createEvent(this.eventData).subscribe({
       next: (res: any) => {
@@ -39,13 +52,22 @@ export class EventForm {
         this.router.navigate(['/event-list']);
       },
       error: (err: any) => {
-        alert('Error al crear el evento: ' + err.message);
+        const msg = err.error?.message || err.statusText || 'Error desconocido';
+        alert('Error al crear el evento: ' + msg);
         console.error('Error al crear el evento:', err);
       }
     });
   }
 
-  //Método para capturar coordenadas del mapa
+  onLocalSelected() {
+    const local = this.locals.find(l => l.id === this.eventData.localId);
+    if (local) {
+      this.eventData.latitude = local.latitude;
+      this.eventData.longitude = local.longitude;
+      this.eventData.address = local.ubication;
+    }
+  }
+
   onCoordinatesSelected(coordinates: { latitude: number, longitude: number, address: string }) {
     this.eventData.latitude = coordinates.latitude;
     this.eventData.longitude = coordinates.longitude;

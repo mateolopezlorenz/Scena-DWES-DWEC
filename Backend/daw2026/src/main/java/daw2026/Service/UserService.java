@@ -17,23 +17,22 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    //Método para encontrar usuario por ID
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
+
+    //Método para encontrar usuario por nombre
     public Optional<User> findByName(String name) {
         return userRepository.findByName(name);
     }
-
+    
+    //Método para encontrar usuario por email
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    public User createUser(User user) {
-    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-        throw new UserAlreadyExistsException("El email '" + user.getEmail() + "' ya está registrado.");
-    }
-    return userRepository.save(user);
-}
 
+    //Método para actualizar un usuario existente
     public User updateUser(User user) {
     Optional<User> existingUser = userRepository.findById(user.getId());
     if (existingUser.isEmpty()) {

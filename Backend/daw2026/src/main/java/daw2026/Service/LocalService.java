@@ -1,6 +1,5 @@
 package daw2026.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,27 +24,23 @@ public class LocalService {
         this.localRepository = localRepository;
         this.userRepository = userRepository;
     }
-
-    @Transactional(readOnly = true)
+    
+    // Métodos para manejar locales
     public List<Local> findAll() {
         return localRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
+    // Encontrar un local por ID o por nombre
     public Optional<Local> findById(Long id) {
         return localRepository.findById(id);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Local> findByName(String name) {
-        return localRepository.findByName(name);
-    }
-
-    @Transactional(readOnly = true)
+    // Encontrar locales por ID de usuario
     public List<Local> findByUserId(Long userId) {
         return localRepository.findByUserId(userId);
     }
 
+    // Crear un nuevo local asociado a un usuario
     public Local createLocal(Long userId, Local local) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario con ID " + userId + " no encontrado."));
@@ -57,6 +52,7 @@ public class LocalService {
         return localRepository.save(local);
     }
 
+    // Actualizar un local existente (solo por el propietario)
     public Local updateLocal(Long userId, Long localId, UpdateLocalRequest request) {
         Local existingLocal = localRepository.findById(localId)
             .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + localId + " no encontrado."));
@@ -65,7 +61,7 @@ public class LocalService {
             throw new UnauthorizedException("No tienes permiso para editar este local.");
         }
 
-        // Partial update: solo actualiza los campos que vienen con valor
+        // Solo actualizamos los campos que se proporcionan en la solicitud
         if (request.getName() != null && !request.getName().isEmpty()) {
             if (!existingLocal.getName().equals(request.getName())) {
                 if (localRepository.findByName(request.getName()).isPresent()) {
@@ -76,16 +72,20 @@ public class LocalService {
         }
         if (request.getLatitude() != null) {
             existingLocal.setLatitude(request.getLatitude());
-        }
+            }
+
         if (request.getLongitude() != null) {
             existingLocal.setLongitude(request.getLongitude());
-        }
+}
+
         if (request.getUbication() != null && !request.getUbication().isEmpty()) {
             existingLocal.setUbication(request.getUbication());
-        }
+            }
+
         if (request.getCapacity() != null && request.getCapacity() > 0) {
             existingLocal.setCapacity(request.getCapacity());
-        }
+            }
+
         if (request.getRooms() != null && request.getRooms() > 0) {
             existingLocal.setRooms(request.getRooms());
         }
@@ -93,6 +93,7 @@ public class LocalService {
         return localRepository.save(existingLocal);
     }
 
+    // Eliminar un local 
     @Transactional
     public void deleteLocal(Long userId, Long id) {
         Local local = localRepository.findById(id)

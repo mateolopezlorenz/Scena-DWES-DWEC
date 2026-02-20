@@ -30,23 +30,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserEvent {
-
+     
+     // Atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    // Relacion con User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties({"events", "locals"})
     private User user;
 
+    // Relacion con Event
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties({"user", "local"})
     private Event event;
-
+    
+    // Fecha de creación del like
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

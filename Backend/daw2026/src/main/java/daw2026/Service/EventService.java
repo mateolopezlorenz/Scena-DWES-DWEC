@@ -33,59 +33,39 @@ public class EventService {
         this.localRepository = localRepository;
     }
 
-    public List<Event> findAllOrderByStartDate() {
-        return eventRepository.findAllByOrderByStartDateAsc();
-    }
-
+    // Método para filtrar eventos por categoría, fecha y texto de búsqueda
     public List<Event> findFiltered(Category category, LocalDate date, String search) {
-        boolean hasSearch = search != null && !search.trim().isEmpty();
-        boolean hasCategory = category != null;
-        boolean hasDate = date != null;
+        String text = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        LocalDateTime startOfDay = date != null ? date.atStartOfDay() : null;
+        LocalDateTime endOfDay = date != null ? date.atTime(23, 59, 59) : null;
 
-        if (hasSearch && hasCategory && hasDate) {
-            LocalDateTime startOfDay = date.atStartOfDay();
-            LocalDateTime endOfDay = date.atTime(23, 59, 59);
-            return eventRepository.searchByTextAndCategoryAndDate(search.trim(), category, startOfDay, endOfDay);
-        } else if (hasSearch && hasCategory) {
-            return eventRepository.searchByTextAndCategory(search.trim(), category);
-        } else if (hasSearch && hasDate) {
-            LocalDateTime startOfDay = date.atStartOfDay();
-            LocalDateTime endOfDay = date.atTime(23, 59, 59);
-            return eventRepository.searchByTextAndDate(search.trim(), startOfDay, endOfDay);
-        } else if (hasSearch) {
-            return eventRepository.searchByText(search.trim());
-        } else if (hasCategory && hasDate) {
-            LocalDateTime startOfDay = date.atStartOfDay();
-            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        if (text != null && category != null && date != null)
+            return eventRepository.searchByTextAndCategoryAndDate(text, category, startOfDay, endOfDay);
+        if (text != null && category != null)
+            return eventRepository.searchByTextAndCategory(text, category);
+        if (text != null && date != null)
+            return eventRepository.searchByTextAndDate(text, startOfDay, endOfDay);
+        if (text != null)
+            return eventRepository.searchByText(text);
+        if (category != null && date != null)
             return eventRepository.findByCategoryAndDate(category, startOfDay, endOfDay);
-        } else if (hasCategory) {
+        if (category != null)
             return eventRepository.findByCategoryOrderByStartDateAsc(category);
-        } else if (hasDate) {
-            LocalDateTime startOfDay = date.atStartOfDay();
-            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        if (date != null)
             return eventRepository.findByDate(startOfDay, endOfDay);
-        }
 
         return eventRepository.findAllByOrderByStartDateAsc();
     }
 
+    // Encontrar un evento por ID
     public Optional<Event> findById(Long id) {
         return eventRepository.findById(id);
     }
 
-    public List<Event> findByCategory(Category category) {
-        return eventRepository.findByCategory(category);
-    }
-
-    public Optional<Event> findByName(String name) {
-        return eventRepository.findByName(name);
-    }
-
+    // Crear un nuevo evento asociado a un usuario y opcionalmente a un local
     public Event createEvent(Long userId, Event event, Long localId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        
-        // Validaciones
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
         if (event.getName() == null || event.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del evento es obligatorio");
         }
@@ -127,16 +107,15 @@ public class EventService {
         event.setUser(user);
         return eventRepository.save(event);
     }
-
+    
+    // Actualizar un evento existente 
     public Event updateEvent(Long userId, Long eventId, Event eventDetails, Long localId) {
-        Event existingEvent = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
+        Event existingEvent = eventRepository.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado"));
         
         if (!existingEvent.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("No tienes permisos para actualizar este evento");
         }
-        
-        // Actualizar campos si se proporcionan
+    
         if (eventDetails.getName() != null && !eventDetails.getName().isEmpty()) {
             existingEvent.setName(eventDetails.getName());
         }
@@ -184,15 +163,14 @@ public class EventService {
                 existingEvent.setAddress(eventDetails.getAddress());
             }
         }
-        
-        // Validar coherencia de fechas después de actualizar
         if (existingEvent.getEndDate().isBefore(existingEvent.getStartDate())) {
             throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
         }
         
         return eventRepository.save(existingEvent);
     }
-
+    
+    // Eliminar un evento 
     @Transactional
     public void deleteEvent(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
@@ -202,7 +180,7 @@ public class EventService {
             throw new UnauthorizedException("No tienes permisos para eliminar este evento");
         }
 
-        // Con cascade delete configurado, los registros de user_event se eliminan automáticamente
+        // Eliminar los likes asociados al evento
         eventRepository.delete(event);
     }
 }

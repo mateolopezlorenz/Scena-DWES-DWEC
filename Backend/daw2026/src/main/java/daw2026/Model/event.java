@@ -75,7 +75,7 @@ public class Event {
     @JsonIgnoreProperties({ "events", "locals", "password" })
     private User user;
 
-    // Local asociado (opcional). Si se borra el local, el evento mantiene sus coordenadas.
+    // Local asociado (opcional).
     @ManyToOne
     @JoinColumn(name = "local_id", nullable = true)
     @OnDelete(action = OnDeleteAction.SET_NULL)
