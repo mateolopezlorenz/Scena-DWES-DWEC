@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Local } from '../models';
+import { Local, CreateLocalRequest, UpdateLocalRequest } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -12,26 +12,21 @@ export class LocalService {
 
   constructor(private http: HttpClient) {}
 
-  crearLocal(data: any): Observable<Local> {
+  // Método para crear un nuevo local.
+  crearLocal(data: CreateLocalRequest): Observable<Local> {
     return this.http.post<Local>(this.url, data);
   }
 
+  // Método para obtener la lista de locales.
   getLocals(): Observable<Local[]> {
     return this.http.get<Local[]>(this.url);
   }
 
-  getLocalsByUser(): Observable<Local[]> {
-    return this.http.get<Local[]>(`${this.url}/user`);
-  }
-
-  getLocalById(id: number): Observable<Local> {
-    return this.http.get<Local>(`${this.url}/${id}`);
-  }
-
-  updateLocal(id: number, data: any): Observable<Local> {
+  updateLocal(id: number, data: UpdateLocalRequest): Observable<Local> {
     return this.http.put<Local>(`${this.url}/${id}`, data);
   }
 
+  // Método para eliminar un local.
   deleteLocal(id: number): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);
   }

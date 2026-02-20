@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { LoginResponse } from '../models';
+import { LoginResponse, LoginRequest, MessageResponse } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -14,27 +14,28 @@ export class Authservice {
     this.isLoggedIn = !!localStorage.getItem('token');
   }
 
+  // Método para registrar un nuevo usuario.
   register(data: {name: string, email: string, password: string}) {
-    return this.http.post<{message: string}>(`${this.url}/register`, data);
+    return this.http.post<MessageResponse>(`${this.url}/register`, data);
   }
 
-  login(data: {email: string, password: string}) {
-    return this.http.post<{message: string}>(`${this.url}/login`, data);
+  // Método para iniciar sesión.
+  login(data: LoginRequest) {
+    return this.http.post<LoginResponse>(`${this.url}/login`, data);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
+  // Método para verificar si el usuario está autenticado.
   isAuthenticated(): boolean {
     return this.isLoggedIn;
   }
 
+  // Método para cerrar sesión.
   logout(): void {
     localStorage.clear();
     this.isLoggedIn = false;
   }
 
+  // Método para guardar la sesión del usuario después de un inicio de sesión exitoso.
   saveSession(response: LoginResponse): void {
     localStorage.setItem('token', response.token);
     localStorage.setItem('name', response.name);

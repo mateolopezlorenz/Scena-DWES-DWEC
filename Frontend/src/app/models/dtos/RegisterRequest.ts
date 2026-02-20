@@ -1,5 +1,4 @@
 //Datos necesarios para registrar un nuevo usuario.
-//Datos necesarios para registrar un nuevo usuario.
 export interface RegisterRequest {
   name: string;
   email: string;

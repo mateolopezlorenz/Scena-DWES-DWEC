@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { LikeCountResponse } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +24,8 @@ export class UserEventService {
   }
 
   // Contar likes de un evento (público)
-  countLikes(eventId: number): Observable<{likes: number}> {
-    return this.http.get<{likes: number}>(`${this.eventsUrl}/${eventId}/likes/count`);
+  countLikes(eventId: number): Observable<LikeCountResponse> {
+    return this.http.get<LikeCountResponse>(`${this.eventsUrl}/${eventId}/likes/count`);
   }
 
   // Obtener eventos favoritos del usuario autenticado

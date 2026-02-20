@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Events } from '../models';
+import { Events, CreateEventRequest, UpdateEventRequest } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class EventService {
   constructor(private http: HttpClient) {}
 
   //Método que envía los datos registrados al backend para crear el evento.
-  createEvent(data: any): Observable<Events> {
+  createEvent(data: CreateEventRequest): Observable<Events> {
     return this.http.post<Events>(`${this.url}`, data);
   }
 
@@ -42,18 +42,8 @@ export class EventService {
     return this.http.get<Events>(`${this.url}/${id}`);
   }
 
-  //Método para obtener un evento por nombre.
-  getEventByName(name: string): Observable<Events> {
-    return this.http.get<Events>(`${this.url}/search/${name}`);
-  }
-
-  //Método para obtener eventos por categoría.
-  getEventsByCategory(category: string): Observable<Events[]> {
-    return this.http.get<Events[]>(`${this.url}/category/${category}`);
-  }
-
   //Método para actualizar un evento.
-  updateEvent(id: number, data: any): Observable<Events> {
+  updateEvent(id: number, data: UpdateEventRequest): Observable<Events> {
     return this.http.put<Events>(`${this.url}/${id}`, data);
   }
 
