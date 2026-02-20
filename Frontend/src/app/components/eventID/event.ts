@@ -135,7 +135,7 @@ export class Event implements OnInit, AfterViewChecked {
         latitude: this.event.latitude,
         longitude: this.event.longitude,
         address: this.event.address,
-        localId: this.event.local ? this.event.local.id : null
+        localId: this.event.local ? this.event.local.id : -1
       };
     }
   }

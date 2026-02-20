@@ -69,7 +69,7 @@
     <div>
       <label>Asociar a un Local (opcional): </label>
       <select [(ngModel)]="editedEvent.localId" name="localId" (change)="onEditLocalSelected()">
-        <option [ngValue]="null">-- Sin local --</option>
+        <option [ngValue]="-1">-- Sin local --</option>
         <option *ngFor="let local of locals" [ngValue]="local.id">{{ local.name }} - {{ local.ubication }}</option>
       </select>
     </div>
