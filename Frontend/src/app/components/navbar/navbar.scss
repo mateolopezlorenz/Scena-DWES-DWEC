@@ -7,13 +7,15 @@
 }
 
 .navbar {
-  background-color: #A01576;
+  background-color: #1a1a1a;
   border-radius: 50px;
   padding: 10px 20px;
+  border: 1px solid #333;
 }
 
 .navbar-brand {
   font-size: 1.2rem;
+  color: #D4A843 !important;
 }
 
 /* hamburger */
@@ -22,7 +24,6 @@
   border: none !important;
   padding: 6px !important;
   box-shadow: none !important;
-  display: flex;
   flex-direction: column;
   gap: 4px;
 }
@@ -31,7 +32,7 @@
   display: block;
   width: 22px;
   height: 2.5px;
-  background: #fff;
+  background: #D4A843;
   border-radius: 2px;
 }
 
@@ -43,6 +44,7 @@
   }
   .navbar {
     border-radius: 0;
+    border: none;
   }
   .navbar-collapse {
     overflow: hidden;
@@ -62,8 +64,8 @@
 }
 
 .btn-nav {
-  background-color: white;
-  color: #6D004C;
+  background-color: #D4A843;
+  color: #111;
   font-weight: 600;
   border: none;
   border-radius: 20px;
@@ -72,18 +74,18 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #f0f0f0;
-    color: #510039;
+    background-color: #f0cc6b;
+    color: #111;
     transform: scale(1.05);
   }
 }
 
 .btn-logout {
-  background-color: #510039;
-  color: white;
+  background-color: #444;
+  color: #E8E8E8;
 
   &:hover {
-    background-color: #3a0028;
-    color: white;
+    background-color: #555;
+    color: #fff;
   }
 }

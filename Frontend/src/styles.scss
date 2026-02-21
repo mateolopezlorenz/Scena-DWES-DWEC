@@ -7,26 +7,27 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  color: white;
-  background-color: #AB3788;
+  color: #E8E8E8;
+  background-color: #111;
 }
 
 a{
-    color: #fff;
+    color: #D4A843;
     text-decoration: none;  
 }
 
 a:hover{
-    color: orange;
+    color: #f0cc6b;
 }
 
 button{
-    background-color: #6D004C;
-    border: 1px solid black;
-    color: white;
+    background-color: #D4A843;
+    border: none;
+    color: #111;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: 600;
 }
 
 .componentes{
@@ -36,11 +37,12 @@ button{
     width: 100%;
     max-width: 1100px;
     min-height: 70vh;
-    background-color: #A01576;
+    background-color: #1a1a1a;
     border-radius: 30px;
     margin: 0 auto 15px auto;
     padding: 20px;
     overflow-x: hidden;
+    border: 1px solid #333;
 }
 
 .contenedorPrincipal {
@@ -59,10 +61,12 @@ button{
     text-align: center;
 }
 
+h1, h2, h3 { color: #D4A843; }
+
 input, select, textarea {
-    background-color: #84085F;
-    border: 1px solid black;
-    color: white;
+    background-color: #222;
+    border: 1px solid #444;
+    color: #E8E8E8;
     padding: 10px 15px;
     border-radius: 5px;
     margin-bottom: 5px;
@@ -70,9 +74,15 @@ input, select, textarea {
     max-width: 100%;
 }
 
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #D4A843;
+    box-shadow: 0 0 0 2px rgba(212,168,67,0.25);
+}
+
 select option {
-    background: #84085F;
-    color: white;
+    background: #222;
+    color: #E8E8E8;
 }
 
 .map-container {
@@ -111,7 +121,7 @@ select option {
 .filter-group {
     flex: 1 1 150px;
     min-width: 0;
-    label { display: block; margin-bottom: 4px; font-size: 0.9rem; }
+    label { display: block; margin-bottom: 4px; font-size: 0.9rem; color: #C0C0C0; }
     input, select { width: 100%; }
 }
 
@@ -137,8 +147,8 @@ select option {
 }
 
 .card-scena {
-    background-color: #84085F;
-    border: 1px solid rgba(255,255,255,0.15);
+    background-color: #222;
+    border: 1px solid #333;
     border-radius: 12px;
     padding: 1rem;
 }
@@ -149,10 +159,12 @@ select option {
     font-size: 1.1rem;
     margin: 0.4rem 0;
     word-break: break-word;
+    color: #fff;
 }
 
 .event-card-info {
     font-size: 0.9rem;
+    color: #C0C0C0;
     p { margin: 0.2rem 0; }
 }
 
@@ -166,24 +178,25 @@ select option {
 }
 
 .btn-details {
-    background-color: #6D004C;
-    border: 1px solid black;
-    color: white;
+    background-color: #D4A843;
+    border: none;
+    color: #111;
     padding: 6px 14px;
     border-radius: 5px;
     font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
 }
 
 .like-btn {
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.4);
-    color: white;
+    border: 1px solid #555;
+    color: #C0C0C0;
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.85rem;
     cursor: pointer;
-    &.liked { background-color: #e91e63; border-color: #e91e63; }
+    &.liked { background-color: #D4A843; border-color: #D4A843; color: #111; }
 }
 
 .badge-category {
@@ -193,10 +206,11 @@ select option {
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
+    color: #111;
 }
-.badge-MUSICA  { background: #e91e63; }
+.badge-MUSICA  { background: #D4A843; }
 .badge-ESPORT  { background: #4caf50; }
-.badge-CULTURA { background: #2196f3; }
+.badge-CULTURA { background: #C0C0C0; }
 .badge-ALTRES  { background: #ff9800; }
 
 .spinner-overlay {
@@ -209,8 +223,8 @@ select option {
 .spinner-scena {
     width: 36px;
     height: 36px;
-    border: 4px solid rgba(255,255,255,0.2);
-    border-top-color: white;
+    border: 4px solid #333;
+    border-top-color: #D4A843;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
     margin: 0 auto;
@@ -218,8 +232,8 @@ select option {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .local-card {
-    background-color: #84085F;
-    border: 1px solid rgba(255,255,255,0.15);
+    background-color: #222;
+    border: 1px solid #333;
     border-radius: 12px;
     padding: 1rem;
     margin-bottom: 10px;
@@ -230,10 +244,10 @@ select option {
     gap: 8px;
     margin-top: 0.5rem;
 }
-.btn-delete { background-color: #dc3545; border-color: #dc3545; }
+.btn-delete { background-color: #dc3545; border-color: #dc3545; color: white; }
 .edit-form {
     width: 100%;
-    label { display: block; margin-top: 0.5rem; font-size: 0.9rem; }
+    label { display: block; margin-top: 0.5rem; font-size: 0.9rem; color: #C0C0C0; }
     input, select { width: 100%; }
 }
 
@@ -276,8 +290,8 @@ select option {
     .componentes, .container-local { width: 70%; max-width: 1200px; }
 }
 
-// AB3788
-// A01576
-// 84085F
-// 6D004C
-// 510039
+// D4A843 - dorado
+// 111 / 1a1a1a / 222 - negros
+// C0C0C0 - plateado
+// E8E8E8 - gris claro
+// 333 / 444 / 555 - bordes
