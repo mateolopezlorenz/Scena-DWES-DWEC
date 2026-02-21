@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
+//Componente de la página de inicio que muestra el nombre del usuario logueado.
 @Component({
   selector: 'home',
   standalone: true,

@@ -3,6 +3,8 @@ import { UserEventService } from '../../services/userEventService';
 import { Events } from '../../models/eventModel';
 import { CommonModule } from '@angular/common';
 import { EventList } from '../event-list/event-list';
+
+//Componente que muestra los eventos a los que el usuario ha dado like.
 @Component({
   selector: 'user-likes',
   templateUrl: './user-likes.html',

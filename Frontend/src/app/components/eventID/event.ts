@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { MapView } from '../map-view/map-view';
 import * as L from 'leaflet';
 
+//Componente de detalle de evento con opciones de edición, eliminación y likes.
 @Component({
   selector: 'app-event',
   imports: [CommonModule, FormsModule, MapView],

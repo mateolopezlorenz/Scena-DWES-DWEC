@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { RegisterRequest } from '../../models';
 import { Router } from '@angular/router'
 
+//Componente del formulario de registro para crear nuevos usuarios.
 @Component({
   selector: 'app-register',
   imports: [CommonModule, FormsModule, RouterModule],

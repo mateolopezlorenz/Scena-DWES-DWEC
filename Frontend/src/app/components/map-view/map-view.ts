@@ -6,6 +6,7 @@ import { Events } from '../../models';
 
 let mapInstanceId = 0;
 
+//Componente del mapa interactivo con Leaflet para mostrar y seleccionar ubicaciones de eventos.
 @Component({
   selector: 'app-map-view',
   standalone: true,

@@ -3,6 +3,7 @@ import { Authservice } from '../../services/authservice';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 
+//Componente del formulario de login para autenticar usuarios existentes.
 @Component({
   selector: 'app-login',
   standalone: true,

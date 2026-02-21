@@ -18,9 +18,15 @@ import daw2026.Service.LocalService;
 import daw2026.exception.LocalAlreadyExistsException;
 import daw2026.exception.ResourceNotFoundException;
 import daw2026.exception.UnauthorizedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/locals")
+@Tag(name = "Locales", description = "Endpoints para gestionar locales/establecimientos")
 public class LocalController {
 
     @Autowired
@@ -30,6 +36,8 @@ public class LocalController {
     private UserRepository userRepository;
 
     // Obtener todos los locales
+    @Operation(summary = "Listar locales", description = "Obtiene todos los locales registrados en el sistema")
+    @ApiResponse(responseCode = "200", description = "Lista de locales obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<Local>> getAllLocals() {
         try {
@@ -41,8 +49,13 @@ public class LocalController {
     }
 
     // Obtener local por ID
+    @Operation(summary = "Obtener local por ID", description = "Devuelve los detalles de un local específico")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Local encontrado"),
+        @ApiResponse(responseCode = "404", description = "Local no encontrado")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getLocalById(@PathVariable Long id) {
+    public ResponseEntity<?> getLocalById(@Parameter(description = "ID del local") @PathVariable Long id) {
         try {
             Local local = localService.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Local con ID " + id + " no encontrado"));
@@ -55,6 +68,11 @@ public class LocalController {
     }
 
     // Obtener locales por usuario autenticado
+    @Operation(summary = "Mis locales", description = "Obtiene los locales creados por el usuario autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de locales del usuario"),
+        @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
     @GetMapping("/user")
     public ResponseEntity<List<Local>> getLocalsByUser(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -70,6 +88,13 @@ public class LocalController {
     }
 
     // Crear un nuevo local
+    @Operation(summary = "Crear local", description = "Crea un nuevo local. Requiere estar autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Local creado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "409", description = "Ya existe un local con ese nombre")
+    })
     @PostMapping
     public ResponseEntity<?> createLocal(@RequestBody CreateLocalRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -111,8 +136,17 @@ public class LocalController {
     }
 
     // Actualizar un local (solo el creador)
+    @Operation(summary = "Actualizar local", description = "Modifica un local existente. Solo el usuario que lo creó puede editarlo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Local actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "403", description = "No tienes permiso para editar este local"),
+        @ApiResponse(responseCode = "404", description = "Local no encontrado"),
+        @ApiResponse(responseCode = "409", description = "Ya existe un local con ese nombre")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateLocal(@PathVariable Long id, @RequestBody UpdateLocalRequest request,
+    public ResponseEntity<?> updateLocal(@Parameter(description = "ID del local") @PathVariable Long id, @RequestBody UpdateLocalRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             if (request.getName() != null && request.getName().isEmpty()) {
@@ -145,8 +179,15 @@ public class LocalController {
     }
 
     // Eliminar un local (solo el creador)
+    @Operation(summary = "Eliminar local", description = "Elimina un local existente. Solo el usuario que lo creó puede eliminarlo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Local eliminado correctamente"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "403", description = "No tienes permiso para eliminar este local"),
+        @ApiResponse(responseCode = "404", description = "Local no encontrado")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLocal(@PathVariable Long id,
+    public ResponseEntity<?> deleteLocal(@Parameter(description = "ID del local") @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())

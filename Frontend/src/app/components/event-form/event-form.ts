@@ -7,6 +7,7 @@ import { LocalService } from '../../services/localService';
 import { Local } from '../../models';
 import { MapView } from '../map-view/map-view';
 
+//Componente del formulario para crear nuevos eventos con selección de local o ubicación manual.
 @Component({
   selector: 'app-event-form',
   standalone: true,

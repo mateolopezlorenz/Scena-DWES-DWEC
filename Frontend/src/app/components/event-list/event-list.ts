@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { EventFiltersComponent, EventFilters } from '../event-filters/event-filters';
 import { MapView } from '../map-view/map-view';
 
+//Componente que muestra la lista de eventos con filtros, mapa y sistema de likes.
 @Component({
   selector: 'event-list',
   imports: [CommonModule, EventFiltersComponent, MapView],

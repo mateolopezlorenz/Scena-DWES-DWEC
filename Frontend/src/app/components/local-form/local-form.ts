@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LocalService } from '../../services/localService';
 import { FormsModule } from '@angular/forms';
 
+//Componente del formulario para crear nuevos locales.
 @Component({
   selector: 'app-local-form',
   standalone: true,

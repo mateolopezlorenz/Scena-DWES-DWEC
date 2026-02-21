@@ -30,9 +30,15 @@ import daw2026.Service.EventService;
 import daw2026.Service.UserEventService;
 import daw2026.exception.ResourceNotFoundException;
 import daw2026.exception.UnauthorizedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/events")
+@Tag(name = "Eventos", description = "Endpoints para crear, leer, actualizar y eliminar eventos")
 public class EventController {
 
     @Autowired
@@ -43,12 +49,18 @@ public class EventController {
 
     @Autowired
     private UserRepository userRepository;
-     
+
+    // Obtener todos los eventos con filtros opcionales
+    @Operation(summary = "Listar eventos", description = "Obtiene todos los eventos ordenados por fecha. Se pueden filtrar por categoría, fecha y texto de búsqueda")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de eventos obtenida correctamente"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping
     public ResponseEntity<List<Event>> getAllEvents(
-            @RequestParam(required = false) Category category,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam(required = false) String search) {
+            @Parameter(description = "Filtrar por categoría (MUSICA, DEPORTE, CULTURA, OTROS)") @RequestParam(required = false) Category category,
+            @Parameter(description = "Filtrar por fecha (formato: YYYY-MM-DD)") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @Parameter(description = "Buscar por texto en nombre o descripción") @RequestParam(required = false) String search) {
         try {
             List<Event> eventos = eventService.findFiltered(category, date, search);
             return ResponseEntity.ok(eventos);
@@ -57,8 +69,14 @@ public class EventController {
         }
     }
 
+    // Obtener un evento por su ID
+    @Operation(summary = "Obtener evento por ID", description = "Devuelve los detalles de un evento específico")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Evento encontrado"),
+        @ApiResponse(responseCode = "404", description = "Evento no encontrado")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+    public ResponseEntity<Event> getEventById(@Parameter(description = "ID del evento") @PathVariable Long id) {
         try {
             Optional<Event> evento = eventService.findById(id);
             if (evento.isPresent()) {
@@ -71,6 +89,14 @@ public class EventController {
         }
     }
 
+    // Crear un nuevo evento (requiere autenticación)
+    @Operation(summary = "Crear evento", description = "Crea un nuevo evento. Requiere estar autenticado con token JWT")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Evento creado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "404", description = "Local no encontrado (si se especifica localId)")
+    })
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody CreateEventRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -108,8 +134,17 @@ public class EventController {
         }
     }
 
+    // Actualizar un evento existente (solo el creador puede hacerlo)
+    @Operation(summary = "Actualizar evento", description = "Modifica un evento existente. Solo el usuario que lo creó puede editarlo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Evento actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "403", description = "No tienes permiso para editar este evento"),
+        @ApiResponse(responseCode = "404", description = "Evento no encontrado")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody UpdateEventRequest request,
+    public ResponseEntity<?> updateEvent(@Parameter(description = "ID del evento") @PathVariable Long id, @RequestBody UpdateEventRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             if (userDetails == null) {
@@ -146,8 +181,16 @@ public class EventController {
         }
     }
 
+    // Eliminar un evento (solo el creador puede hacerlo)
+    @Operation(summary = "Eliminar evento", description = "Elimina un evento existente. Solo el usuario que lo creó puede eliminarlo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Evento eliminado correctamente"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "403", description = "No tienes permiso para eliminar este evento"),
+        @ApiResponse(responseCode = "404", description = "Evento no encontrado")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable Long id,
+    public ResponseEntity<?> deleteEvent(@Parameter(description = "ID del evento") @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             if (userDetails == null) {
@@ -172,8 +215,15 @@ public class EventController {
     }
 
     // Añadir evento a favoritos (like)
+    @Operation(summary = "Dar like a evento", description = "Añade un evento a los favoritos del usuario autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Like añadido correctamente"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "404", description = "Evento no encontrado"),
+        @ApiResponse(responseCode = "409", description = "Ya has dado like a este evento")
+    })
     @PostMapping("/{id}/like")
-    public ResponseEntity<?> addLike(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> addLike(@Parameter(description = "ID del evento") @PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -189,8 +239,14 @@ public class EventController {
     }
 
     // Eliminar evento de favoritos (unlike)
+    @Operation(summary = "Quitar like de evento", description = "Elimina un evento de los favoritos del usuario autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Like eliminado correctamente"),
+        @ApiResponse(responseCode = "401", description = "No autenticado"),
+        @ApiResponse(responseCode = "404", description = "Evento no encontrado o no tenías like en él")
+    })
     @DeleteMapping("/{id}/like")
-    public ResponseEntity<?> removeLike(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> removeLike(@Parameter(description = "ID del evento") @PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -204,8 +260,13 @@ public class EventController {
     }
 
     // Contar likes de un evento (público)
+    @Operation(summary = "Contar likes", description = "Obtiene el número total de likes de un evento. Este endpoint es público")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Número de likes obtenido"),
+        @ApiResponse(responseCode = "500", description = "Error al contar likes")
+    })
     @GetMapping("/{id}/likes/count")
-    public ResponseEntity<?> countLikes(@PathVariable Long id) {
+    public ResponseEntity<?> countLikes(@Parameter(description = "ID del evento") @PathVariable Long id) {
         try {
             long count = userEventService.countLikes(id);
             return ResponseEntity.ok(new LikeCountResponse(count));

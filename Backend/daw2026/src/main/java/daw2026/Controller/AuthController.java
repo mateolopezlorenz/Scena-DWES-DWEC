@@ -16,15 +16,26 @@ import daw2026.Dto.RegisterRequest;
 import daw2026.Model.User;
 import daw2026.Service.AuthService;
 import daw2026.exception.UserAlreadyExistsException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autenticación", description = "Endpoints para registro y login de usuarios")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
     // Registro de un nuevo usuario
+    @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario en el sistema con email, nombre y contraseña")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos (nombre corto, email mal formado, etc.)"),
+        @ApiResponse(responseCode = "409", description = "El email ya está registrado")
+    })
     @PostMapping("/register")
     public ResponseEntity<MessageResponse> register(@RequestBody RegisterRequest request) {
 
@@ -70,6 +81,12 @@ public class AuthController {
     }
 
     // Login de un usuario existente
+    @Operation(summary = "Iniciar sesión", description = "Autentica al usuario y devuelve un token JWT para usar en las peticiones protegidas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login correcto, devuelve el token JWT"),
+        @ApiResponse(responseCode = "400", description = "Email o contraseña vacíos"),
+        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas")
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         // Validamos que los campos no estén vacíos, si lo están, devolvemos código 400.

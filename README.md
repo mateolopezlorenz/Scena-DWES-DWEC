@@ -83,7 +83,7 @@ S'han eliminat funcionalitats complexes (mapa de calor, rols avançats, temps re
 |---|---|
 | OA-DWES-1 | Desenvolupar una API REST completa amb almenys 8 endpoints funcionals seguint principis RESTful |
 | OA-DWES-2 | Implementar un sistema d'autenticació amb JWT (registre, login, protecció d'endpoints) |
-| OA-DWES-3 | Dissenyar i implementar un model de dades relacional amb 4 entitats relacionades (1:N i N:M): `users`, `local`, `events`, `user_event` |
+| OA-DWES-3 | Dissenyar i implementar un model de dades relacional amb 3 entitats relacionades (1:N i N:M): `users`, `events`, `user_likes` |
 | OA-DWES-4 | Aplicar validacions server-side en formularis i operacions CRUD |
 | OA-DWES-5 | Gestionar la persistència de dades utilitzant JPA/Hibernate o equivalent (Spring Data, Sequelize, etc.) |
 | OA-DWES-6 | Documentar endpoints API amb especificacions clares (mètode HTTP, ruta, payload, resposta) |
@@ -107,8 +107,8 @@ S'han eliminat funcionalitats complexes (mapa de calor, rols avançats, temps re
 
 #### Backend (DWES)
 
-- `POST /api/auth/register` — Registre d'usuaris amb username, email, password
-  - Validació: email únic, username únic, password mínim 6 caràcters
+- `POST /api/auth/register` — Registre d'usuaris amb email, password, nom
+  - Validació: email únic, password mínim 6 caràcters
   - Encriptació de password (bcrypt o similar)
 - `POST /api/auth/login` — Login que retorna JWT token
   - Validació de credencials
@@ -120,7 +120,7 @@ S'han eliminat funcionalitats complexes (mapa de calor, rols avançats, temps re
 
 ```
 id          BIGINT PRIMARY KEY AUTO_INCREMENT
-username    VARCHAR(255) UNIQUE NOT NULL
+name        VARCHAR(100) NOT NULL
 email       VARCHAR(255) UNIQUE NOT NULL
 password    VARCHAR(255) NOT NULL
 created_at  TIMESTAMP
@@ -130,7 +130,7 @@ created_at  TIMESTAMP
 
 #### Frontend (DWEC)
 
-- **Component Registre:** Formulari amb camps username, email, password, confirmació password
+- **Component Registre:** Formulari amb camps nom, email, password, confirmació password
   - Validació: emails vàlids, passwords coincidents, camps obligatoris
 - **Component Login:** Formulari email + password
   - Emmagatzematge del token en localStorage/sessionStorage
@@ -154,11 +154,11 @@ created_at  TIMESTAMP
 
 - `GET /api/events` — Llistar tots els esdeveniments (públic)
   - Retornar dades ordenades per data d'inici (pròxims primer)
-  - Incloure informació de l'usuari creador i del local associat
+  - Incloure informació de l'usuari creador
 - `GET /api/events/{id}` — Obtenir detalls d'un esdeveniment (públic)
 - `POST /api/events` — Crear esdeveniment (protegit)
-  - Validacions: nom obligatori, data inici < data fi, local_id vàlid
-  - Associar esdeveniment amb usuari autenticat i local existent
+  - Validacions: nom obligatori, data inici < data fi
+  - Associar esdeveniment amb usuari autenticat
 - `PUT /api/events/{id}` — Editar esdeveniment (protegit, només creador)
 - `DELETE /api/events/{id}` — Eliminar esdeveniment (protegit, només creador)
 
@@ -169,41 +169,27 @@ id           BIGINT PRIMARY KEY AUTO_INCREMENT
 name         VARCHAR(255) NOT NULL
 description  TEXT
 category     VARCHAR(50) NOT NULL     -- música, esport, cultura, altres
-start_date   DATE NOT NULL
-end_date     DATE NOT NULL
-capacity     INT NOT NULL
-rooms        INT NOT NULL
-created_at   DATE NOT NULL
+start_date   DATETIME NOT NULL
+end_date     DATETIME NOT NULL
+latitude     DOUBLE NOT NULL
+longitude    DOUBLE NOT NULL
+address      VARCHAR(255)
+created_at   TIMESTAMP
 user_id      BIGINT FOREIGN KEY -> users(id)  NOT NULL
-local_id     BIGINT FOREIGN KEY -> local(id)  NOT NULL
 ```
 
-> Relació **N:1** amb `users` (creador) i **N:1** amb `local` (ubicació).
-
-**Model de dades — `local`:**
-
-```
-id          BIGINT PRIMARY KEY AUTO_INCREMENT
-name        VARCHAR(255) NOT NULL
-latitude    INT NOT NULL
-longitude   INT NOT NULL
-ubication   VARCHAR(255) NOT NULL
-capacity    INT NOT NULL
-rooms       INT NOT NULL
-```
-
-> Relació **1:N** amb `events` — un local pot albergar molts esdeveniments. Conté les coordenades de geolocalització.
+> Relació **N:1** amb `users` (creador).
 
 #### Frontend (DWEC)
 
 - **Component Llista Esdeveniments:** Mostra esdeveniments en targetes/llista
-  - Mostrar: nom, categoria, data, local (ubicació)
+  - Mostrar: nom, categoria, data, ubicació
   - Botó "Veure detalls" per cada esdeveniment
 - **Component Detalls Esdeveniment:** Visualització completa d'1 esdeveniment
-  - Mostrar mapa amb pin a la ubicació del local associat
+  - Mostrar mapa amb pin a la ubicació de l'esdeveniment
   - Si l'usuari és el creador: botons Editar/Eliminar
 - **Component Formulari Esdeveniment:** Per crear/editar
-  - Camps: nom, descripció, categoria (select), dates, capacitat, sales, local (select)
+  - Camps: nom, descripció, categoria (select), dates, ubicació/coordenades
   - Validació: tots els camps obligatoris, data fi posterior a data inici
   - *Bonus:* Selector de coordenades clicant en mapa
 - **Servei HTTP:** Mètodes per fer totes les peticions CRUD
@@ -252,7 +238,7 @@ rooms       INT NOT NULL
 - `DELETE /api/events/{id}/like` — Eliminar de favorits (protegit)
 - `GET /api/users/me/likes` — Obtenir esdeveniments favorits de l'usuari autenticat
 
-**Model de dades — `user_event`:**
+**Model de dades — `user_likes`:**
 
 ```
 id          BIGINT PRIMARY KEY AUTO_INCREMENT
@@ -360,13 +346,12 @@ Aquestes funcionalitats del projecte original **NO** són requerides per l'avalu
 
 ## 🗄 Model de Dades
 
-### Esquema Relacional (4 Entitats)
+### Esquema Relacional (3 Entitats)
 
 ```
-users       (id, username, email, password, created_at)
-local       (id, name, latitude, longitude, ubication, capacity, rooms)
-events      (id, name, description, category, start_date, end_date, capacity, rooms, created_at, user_id, local_id)
-user_event  (id, user_id, event_id, liked, created_at)
+users       (id, name, email, password, created_at)
+events      (id, name, description, category, start_date, end_date, latitude, longitude, address, created_at, user_id)
+user_likes  (id, user_id, event_id, liked, created_at)
 ```
 
 ### Relacions
@@ -374,8 +359,7 @@ user_event  (id, user_id, event_id, liked, created_at)
 | Relació | Tipus | Descripció |
 |---|---|---|
 | `users` → `events` | 1:N | Un usuari crea molts esdeveniments |
-| `local` → `events` | 1:N | Un local alberga molts esdeveniments |
-| `users` ↔ `events` (via `user_event`) | N:M | Favorits/likes dels usuaris a esdeveniments |
+| `users` ↔ `events` (via `user_likes`) | N:M | Favorits/likes dels usuaris a esdeveniments |
 
 ---
 

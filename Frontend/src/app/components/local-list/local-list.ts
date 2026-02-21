@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LocalService } from '../../services/localService';
 import { Local } from '../../models';
 
+//Componente que muestra la lista de locales con opciones de edición y eliminación.
 @Component({
   selector: 'app-local-list',
   standalone: true,

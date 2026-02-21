@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { Authservice } from '../../services/authservice';
 
+//Componente de la barra de navegación con enlaces y gestión de sesión.
 @Component({
   selector: 'app-navbar',
   imports: [CommonModule, RouterModule],

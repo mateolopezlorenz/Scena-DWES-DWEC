@@ -1,12 +1,14 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+//Interfaz para los filtros de búsqueda de eventos.
 export interface EventFilters {
   category: string;
   date: string;
   search: string;
 }
 
+//Componente de filtros para buscar eventos por categoría, fecha y texto.
 @Component({
   selector: 'event-filters',
   standalone: true,

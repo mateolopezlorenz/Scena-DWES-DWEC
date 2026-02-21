@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**", "/error").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/locals/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                    // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
