@@ -20,6 +20,7 @@ export class EventList implements OnInit {
 
   events: Events[] = [];
   isLoggedIn = false;
+  isLoading = false;
   likeCounts: { [eventId: number]: number } = {};
   likedEventIds: Set<number> = new Set();
   showFilters = true;
@@ -43,13 +44,18 @@ export class EventList implements OnInit {
   }
 
   loadEvents() {
+    this.isLoading = true;
     this.eventService.getAllEvents().subscribe({
       next: (data: Events[]) => {
         this.events = this.sortEventsByDate(data);
         this.loadLikeCounts();
         this.loadUserLikes();
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error al cargar los eventos', err)
+      error: (err) => {
+        console.error('Error al cargar los eventos', err);
+        this.isLoading = false;
+      }
     });
   }
 
@@ -64,8 +70,12 @@ export class EventList implements OnInit {
         this.events = this.sortEventsByDate(data);
         this.loadLikeCounts();
         this.loadUserLikes();
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error al filtrar los eventos', err)
+      error: (err) => {
+        console.error('Error al filtrar los eventos', err);
+        this.isLoading = false;
+      }
     });
   }
 

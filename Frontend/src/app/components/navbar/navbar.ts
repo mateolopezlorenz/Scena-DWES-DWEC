@@ -12,10 +12,12 @@ import { Authservice } from '../../services/authservice';
 export class Navbar {
 
   username: string | null = null;
+  isMenuOpen = false;
 
   constructor(private router: Router, private authService: Authservice) {
     this.router.events.subscribe(() => {
       this.checkUser();
+      this.isMenuOpen = false;
     });
   }
 
@@ -25,6 +27,10 @@ export class Navbar {
 
   checkUser() {
     this.username = localStorage.getItem('name');
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
   logout() {
