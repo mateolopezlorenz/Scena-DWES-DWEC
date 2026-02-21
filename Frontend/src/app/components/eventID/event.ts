@@ -73,12 +73,10 @@ export class Event implements OnInit, AfterViewChecked {
     });
   }
 
-  //Método para obtener el ID del usuario autenticado.
   usuarioActivado() {
     this.usuarioActivo = +localStorage.getItem('id')!;
   }
 
-  //Método que carga los datos del evento a través del servicio.
   loadEvent(): void {
     if (this.eventId) {
       this.eventService.getEventById(this.eventId).subscribe({
@@ -112,7 +110,6 @@ export class Event implements OnInit, AfterViewChecked {
   toggleLike(): void {
     if (!this.event) return;
     if (this.isLoggedIn) {
-      // Usuario registrado: toggle via API
       if (this.liked) {
         this.userEventService.removeLike(this.event.id).subscribe({
           next: () => this.liked = false,
@@ -125,17 +122,14 @@ export class Event implements OnInit, AfterViewChecked {
         });
       }
     } else {
-      // Usuario no registrado: cada clic suma +1 sin límite
       this.guestLikeCount = this.userEventService.addGuestLike(this.event.id);
     }
   }
 
-  //Método para verificar si el usuario es el creador del evento.
   esCreador(): boolean {
     return this.usuarioActivo !== null && this.event?.user?.id === this.usuarioActivo;
   }
 
-  //Método para inicializar el formulario de edición.
   datosDeInicio() {
     if (this.event) {
       this.editedEvent = {
@@ -163,7 +157,6 @@ export class Event implements OnInit, AfterViewChecked {
     }
   }
 
-  //Método para capturar coordenadas del mapa en edición
   onEditCoordinatesSelected(coordinates: { latitude: number, longitude: number, address: string }) {
     this.editedEvent.latitude = coordinates.latitude;
     this.editedEvent.longitude = coordinates.longitude;
@@ -171,18 +164,15 @@ export class Event implements OnInit, AfterViewChecked {
     this.showEditMapSelector = false;
   }
 
-  //Método para mostrar el formulario de edición.
   showEditForm() {
     this.usuarioEditando = true;
   }
 
-  //Método para cancelar la edición.
   cancelEdit() {
     this.usuarioEditando = false;
     this.datosDeInicio();
   }
 
-  //Método para guardar los cambios.
   saveChanges() {
     if (!this.event?.id) return;
 
@@ -200,19 +190,16 @@ export class Event implements OnInit, AfterViewChecked {
     });
   }
 
-  //Método para mostrar la confirmación de eliminación.
   showDeleteConfirmation() {
     this.usuarioEliminando = true;
     this.conformacionEliminar = '';
   }
 
-  //Método para cancelar la eliminación.
   cancelDelete() {
     this.usuarioEliminando = false;
     this.conformacionEliminar = '';
   }
 
-  //Método para confirmar y eliminar el evento.
   confirmDelete() {
     if (!this.event) return;
 
@@ -236,7 +223,6 @@ export class Event implements OnInit, AfterViewChecked {
     });
   }
 
-  //Inicializar mapa cuando el DOM esté listo
   ngAfterViewChecked(): void {
     if (!this.mapInitialized && this.event?.latitude && this.event?.longitude && !this.usuarioEditando && !this.usuarioEliminando) {
       const mapEl = document.getElementById('event-map');
@@ -253,7 +239,6 @@ export class Event implements OnInit, AfterViewChecked {
     const lat = this.event.latitude;
     const lng = this.event.longitude;
 
-    // Fix iconos Leaflet
     const defaultIcon = L.icon({
       iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
       iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',

@@ -35,8 +35,7 @@ export class Login {
         this.router.navigate(["/home"])
       },
       error: (err: any) => {
-
-        //Damos feedback al usuario de que el login no se ha completado.
+        
         alert('Error en el login: ' + err.error.message);
         console.error('Error en el login:', err);
       }

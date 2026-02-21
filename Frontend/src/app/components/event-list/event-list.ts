@@ -91,7 +91,6 @@ export class EventList implements OnInit {
     for (const event of this.events) {
       this.userEventService.countLikes(event.id).subscribe({
         next: (res) => {
-          // Sumar los MG de invitado (pueden ser varios)
           const guestExtra = this.userEventService.getGuestLikeCount(event.id);
           this.likeCounts[event.id] = res.likes + guestExtra;
         },
@@ -113,7 +112,6 @@ export class EventList implements OnInit {
 
   toggleLike(eventId: number) {
     if (this.isLoggedIn) {
-      // Usuario registrado: toggle via API
       if (this.isLiked(eventId)) {
         this.userEventService.removeLike(eventId).subscribe({
           next: () => {
@@ -132,7 +130,6 @@ export class EventList implements OnInit {
         });
       }
     } else {
-      // Usuario no registrado: cada clic suma +1 sin límite
       this.userEventService.addGuestLike(eventId);
       this.likeCounts[eventId] = (this.likeCounts[eventId] || 0) + 1;
     }

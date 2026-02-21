@@ -3,7 +3,6 @@ import { UserEventService } from '../../services/userEventService';
 import { Events } from '../../models/eventModel';
 import { CommonModule } from '@angular/common';
 import { EventList } from '../event-list/event-list';
-
 @Component({
   selector: 'user-likes',
   templateUrl: './user-likes.html',
@@ -15,11 +14,9 @@ export class UserLikesComponent implements OnInit {
   error: string = '';
 
   constructor(private userEventService: UserEventService) {}
-
   ngOnInit() {
     this.getLikedEvents();
   }
-
   getLikedEvents() {
     this.userEventService.getLikedByUser().subscribe({
       next: (events) => {

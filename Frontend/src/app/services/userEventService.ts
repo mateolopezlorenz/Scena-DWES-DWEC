@@ -34,9 +34,7 @@ export class UserEventService {
     return this.http.get<any[]>(`${this.usersUrl}/me/likes`);
   }
 
-  // ---- Métodos para likes de usuarios NO registrados (localStorage) ----
-  // Se guarda un mapa { eventId: cantidad } para permitir MG ilimitados
-
+  // Métodos para manejar likes de invitados usando localStorage
   getGuestLikeCounts(): { [eventId: number]: number } {
     try {
       const stored = localStorage.getItem(this.localStorageKey);
@@ -47,10 +45,12 @@ export class UserEventService {
     return {};
   }
 
+  // Obtener el conteo de likes de invitados para un evento específico
   getGuestLikeCount(eventId: number): number {
     return this.getGuestLikeCounts()[eventId] || 0;
   }
 
+  // Añadir un like de invitado para un evento específico
   addGuestLike(eventId: number): number {
     const counts = this.getGuestLikeCounts();
     counts[eventId] = (counts[eventId] || 0) + 1;

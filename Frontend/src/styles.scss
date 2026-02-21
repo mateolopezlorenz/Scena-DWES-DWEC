@@ -2,6 +2,7 @@
 
 * { box-sizing: border-box; }
 
+// estilos base del body
 body {
   width: 100%;
   min-height: 100vh;
@@ -10,7 +11,7 @@ body {
   color: #E8E8E8;
   background-color: #111;
 }
-
+// enlaces
 a{
     color: #D4A843;
     text-decoration: none;  
@@ -20,6 +21,7 @@ a:hover{
     color: #f0cc6b;
 }
 
+// boton general
 button{
     background-color: #D4A843;
     border: none;
@@ -30,6 +32,7 @@ button{
     font-weight: 600;
 }
 
+// contenedor principal 
 .componentes{
     display: flex;
     flex-direction: column;
@@ -45,6 +48,7 @@ button{
     border: 1px solid #333;
 }
 
+// wrapper que centra componentes
 .contenedorPrincipal {
     display: flex;
     justify-content: center;
@@ -52,6 +56,7 @@ button{
     padding: 0 15px;
 }
 
+// home
 .containerHome{
     display: flex;
     flex-direction: column;
@@ -61,8 +66,10 @@ button{
     text-align: center;
 }
 
+// titulos
 h1, h2, h3 { color: #D4A843; }
 
+// inputs y selects
 input, select, textarea {
     background-color: #222;
     border: 1px solid #444;
@@ -77,7 +84,6 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: #D4A843;
-    box-shadow: 0 0 0 2px rgba(212,168,67,0.25);
 }
 
 select option {
@@ -85,6 +91,7 @@ select option {
     color: #E8E8E8;
 }
 
+// mapa leaflet
 .map-container {
   width: 100%;
   max-width: 900px;
@@ -99,12 +106,14 @@ select option {
   }
 }
 
+// lista de eventos
 .event-list-container {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
+// filtros
 .filters-container{
     width: 100%;
     margin-top: 10px;
@@ -131,6 +140,7 @@ select option {
     flex-wrap: wrap;
 }
 
+// locales
 .container-local{
     display: flex;
     flex-direction: column;
@@ -139,6 +149,7 @@ select option {
     align-items: stretch;
 }
 
+// formularios
 .form{
     display: flex;
     flex-direction: column;
@@ -146,6 +157,7 @@ select option {
     width: 100%;
 }
 
+// tarjetas de evento
 .card-scena {
     background-color: #222;
     border: 1px solid #333;
@@ -177,6 +189,7 @@ select option {
     margin-top: 0.75rem;
 }
 
+// botones
 .btn-details {
     background-color: #D4A843;
     border: none;
@@ -199,6 +212,7 @@ select option {
     &.liked { background-color: #D4A843; border-color: #D4A843; color: #111; }
 }
 
+// badges de categorias
 .badge-category {
     display: inline-block;
     padding: 3px 10px;
@@ -213,6 +227,7 @@ select option {
 .badge-CULTURA { background: #C0C0C0; }
 .badge-ALTRES  { background: #ff9800; }
 
+// spinner de carga
 .spinner-overlay {
     display: flex;
     justify-content: center;
@@ -231,6 +246,7 @@ select option {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+// tarjetas de local
 .local-card {
     background-color: #222;
     border: 1px solid #333;
@@ -251,14 +267,17 @@ select option {
     input, select { width: 100%; }
 }
 
+// fix bootstrap container
 .componentes .container {
     max-width: 100%;
     width: 100%;
     padding: 0;
 }
+
+// errores de validacion
 .error-msg { color: #ff6b6b; font-size: 0.82rem; margin-top: 0.2rem; }
 
-/* movil */
+// responsive movil
 @media (max-width: 576px) {
     .componentes, .container-local {
         width: 100%;
@@ -274,24 +293,18 @@ select option {
     .event-card-actions { flex-direction: column; button { width: 100%; } }
 }
 
-/* tablet */
+// tablet
 @media (min-width: 577px) and (max-width: 768px) {
     .componentes, .container-local { width: 95%; border-radius: 25px; }
     .map-container { height: 40vh; }
 }
 
-/* desktop */
+// desktop
 @media (min-width: 769px) and (max-width: 1200px) {
     .componentes, .container-local { width: 85%; }
 }
 
-/* pantallas grandes */
+// pantallas grandes
 @media (min-width: 1201px) {
     .componentes, .container-local { width: 70%; max-width: 1200px; }
 }
-
-// D4A843 - dorado
-// 111 / 1a1a1a / 222 - negros
-// C0C0C0 - plateado
-// E8E8E8 - gris claro
-// 333 / 444 / 555 - bordes

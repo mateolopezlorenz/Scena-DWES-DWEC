@@ -1,5 +1,4 @@
 //Datos necesarios para registrar un nuevo local.
-
 export interface CreateLocalRequest {
   name: string;
   latitude: number;

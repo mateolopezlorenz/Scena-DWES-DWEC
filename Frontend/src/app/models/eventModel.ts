@@ -1,6 +1,7 @@
 import { User } from './userModel';
 import { Local } from './localModel';
 
+//Modelo de datos para eventos
 export interface Events {
   id: number;
   name: string;

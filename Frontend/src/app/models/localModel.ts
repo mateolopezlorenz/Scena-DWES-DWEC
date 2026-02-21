@@ -1,3 +1,4 @@
+//Modelo de datos para locales
 export interface Local {
   id: number;
   name: string;

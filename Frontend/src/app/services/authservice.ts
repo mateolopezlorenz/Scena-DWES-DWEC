@@ -31,7 +31,6 @@ export class Authservice {
 
   // Método para cerrar sesión.
   logout(): void {
-    // Preservar los likes de invitado antes de limpiar
     const guestLikes = localStorage.getItem('guest_liked_events');
     localStorage.clear();
     if (guestLikes) {
@@ -40,7 +39,7 @@ export class Authservice {
     this.isLoggedIn = false;
   }
 
-  // Método para guardar la sesión del usuario después de un inicio de sesión exitoso.
+  // Método para guardar los datos de sesión en localStorage después de un inicio de sesión exitoso.
   saveSession(response: LoginResponse): void {
     localStorage.setItem('token', response.token);
     localStorage.setItem('name', response.name);
