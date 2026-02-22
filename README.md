@@ -502,6 +502,14 @@ Consulta el detall al document original si tens dubtes sobre l'stack o les funci
 - **Node.js** (v18+) i **npm** (per al frontend)
 - **Git**
 
+### Backend (mvn)
+```bash
+cd Backend/daw2026
+mvn clean package -DskipTests
+```
+
+D'aquesta manera crearem el .jar del nostre proyecte Spring-boot.
+
 ### Backend (Docker)
 
 ```bash
@@ -515,12 +523,18 @@ Això aixecarà:
 
 L'esquema de la base de dades es crea automàticament via Hibernate (`ddl-auto: update`).
 
+Per a eliminar els contenidors y el volum que cream, utilitzarem lo següent:
+
+```bash
+docker-compose down -v
+```
+
 ### Frontend (Angular)
 
 ```bash
 cd Frontend
 npm install
-ng serve --proxy-config proxy.conf.json
+ng serve
 ```
 
 L'aplicació estarà disponible a `http://localhost:4200`.
