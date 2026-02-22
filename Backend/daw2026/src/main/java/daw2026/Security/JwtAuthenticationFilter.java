@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (requestPath.startsWith("/api/auth/") ||
             requestPath.equals("/error") ||
             (requestPath.startsWith("/api/events/") && "GET".equals(request.getMethod())) ||
-            (requestPath.startsWith("/api/locals/") && "GET".equals(request.getMethod())) ||
+            (requestPath.startsWith("/api/locals/") && "GET".equals(request.getMethod()) && !requestPath.equals("/api/locals/user")) ||
             (requestPath.equals("/api/locals") && "GET".equals(request.getMethod()))) {
             chain.doFilter(request, response);
             return;

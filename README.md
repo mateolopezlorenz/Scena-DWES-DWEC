@@ -103,7 +103,7 @@ S'han eliminat funcionalitats complexes (mapa de calor, rols avançats, temps re
 
 ## 🛠 Funcionalitats Requerides (MVP)
 
-### 1. Gestió d'Usuaris (Prioritat: 🔴 ALTA)
+### 1. ✅ Gestió d'Usuaris (Prioritat: 🔴 ALTA)
 
 #### Backend (DWES)
 
@@ -148,7 +148,7 @@ created_at  TIMESTAMP
 
 ---
 
-### 2. Gestió d'Esdeveniments — CRUD (Prioritat: 🔴 ALTA)
+### 2. ✅ Gestió d'Esdeveniments — CRUD (Prioritat: 🔴 ALTA)
 
 #### Backend (DWES)
 
@@ -204,7 +204,7 @@ user_id      BIGINT FOREIGN KEY -> users(id)  NOT NULL
 
 ---
 
-### 3. Visualització en Mapa Interactiu (Prioritat: 🔴 ALTA)
+### 3. ✅ Visualització en Mapa Interactiu (Prioritat: 🔴 ALTA)
 
 #### Backend (DWES)
 
@@ -229,7 +229,7 @@ user_id      BIGINT FOREIGN KEY -> users(id)  NOT NULL
 
 ---
 
-### 4. Sistema de Favorits — "M'agrada" (Prioritat: 🟡 MITJANA)
+### 4. ✅ Sistema de Favorits — "M'agrada" (Prioritat: 🟡 MITJANA)
 
 #### Backend (DWES)
 
@@ -270,7 +270,7 @@ UNIQUE CONSTRAINT (user_id, event_id)
 
 ---
 
-### 5. Filtratge d'Esdeveniments (Prioritat: 🟡 MITJANA)
+### 5. ✅ Filtratge d'Esdeveniments (Prioritat: 🟡 MITJANA)
 
 #### Backend (DWES)
 
@@ -297,7 +297,7 @@ UNIQUE CONSTRAINT (user_id, event_id)
 
 ---
 
-### 6. Disseny Responsive i UX (Prioritat: 🟡 MITJANA)
+### 6. ✅ Disseny Responsive i UX (Prioritat: 🟡 MITJANA)
 
 #### Frontend (DWEC)
 
@@ -331,6 +331,23 @@ Aquestes funcionalitats del projecte original **NO** són requerides per l'avalu
 
 ---
 
+## ✅ Funcionalitats Extra Implementades (No Requerides)
+
+S´han implementat les següents funcionalitats addicionals:
+
+| Funcionalitat | Descripció |
+|---|---|
+| ✅ **Gestió de Locals (CRUD complet)** | Entitat `local` amb endpoints CRUD complets (`GET /api/locals`, `GET /{id}`, `GET /user`, `POST`, `PUT`, `DELETE`). Permet als usuaris crear i gestionar locals on es celebren esdeveniments. |
+| ✅ **Associació Esdeveniments-Locals** | Cada esdeveniment pot estar vinculat a un local existent mitjançant `local_id`, afegint una relació 1:N addicional. |
+| ✅ **Components Frontend de Locals** | Components `local-list` i `local-form` per llistar, crear i editar locals des de la interfície. |
+| ✅ **Cerca d'Usuaris (només Backend)** | Endpoints addicionals per cercar usuaris per ID (`/api/users/usuario/{id}`), nom (`/api/users/name/{name}`) i email (`/api/users/email/{email}`). No consumits des del frontend. |
+| ✅ **Comptador de Likes** | Endpoint `GET /api/events/{id}/likes/count` per obtenir el nombre total de likes d'un esdeveniment. |
+| ✅ **Component Home** | Pàgina d'inici dedicada amb navegació cap a les seccions principals. |
+| ✅ **Swagger Docs (Bonus +2 pts)** | Documentació interactiva de l'API amb springdoc-openapi, accessible a `/swagger-ui/index.html`. |
+| ✅ **Dockerització completa** | Docker Compose amb contenidors per a PostgreSQL i Spring Boot, desplegament amb una sola comanda. |
+
+---
+
 ## 💻 Stack Tecnològic
 
 | Capa | Tecnologia Recomanada | Alternatives Vàlides | Obligatori |
@@ -346,7 +363,7 @@ Aquestes funcionalitats del projecte original **NO** són requerides per l'avalu
 
 ## 🗄 Model de Dades
 
-### Esquema Relacional (3 Entitats)
+### Esquema Relacional (3 Entitats Requerides)
 
 ```
 users       (id, name, email, password, created_at)
@@ -354,12 +371,21 @@ events      (id, name, description, category, start_date, end_date, latitude, lo
 user_likes  (id, user_id, event_id, liked, created_at)
 ```
 
+### Entitats Extra Afegides
+
+```
+local       (id, name, latitude, longitude, ubication, capacity, rooms)
+```
+
+> Entitat addicional no requerida. Permet gestionar locals on es celebren esdeveniments. Relació **1:N** amb `events` mitjançant `local_id`.
+
 ### Relacions
 
 | Relació | Tipus | Descripció |
 |---|---|---|
 | `users` → `events` | 1:N | Un usuari crea molts esdeveniments |
 | `users` ↔ `events` (via `user_likes`) | N:M | Favorits/likes dels usuaris a esdeveniments |
+| `local` → `events` | 1:N | *(Extra)* Un local alberga molts esdeveniments |
 
 ---
 
@@ -466,6 +492,84 @@ Consulta el detall al document original si tens dubtes sobre l'stack o les funci
 > **Data de publicació:** 2 de febrer de 2026
 > **Versió del document:** 3.1
 > **Autor:** Xavier Sastre i Flexas
+
+
+## Instruccions d'Instal·lació
+
+### Requisits previs
+
+- **Docker** i **Docker Compose** instal·lats
+- **Node.js** (v18+) i **npm** (per al frontend)
+- **Git**
+
+### Backend (Docker)
+
+```bash
+cd Backend/daw2026/Docker
+docker compose up -d --build
+```
+
+Això aixecarà:
+- **PostgreSQL** al port `5432` (contenidor `scena_postgres`)
+- **Spring Boot API** al port `8080` (contenidor `scena_app`)
+
+L'esquema de la base de dades es crea automàticament via Hibernate (`ddl-auto: update`).
+
+### Frontend (Angular)
+
+```bash
+cd Frontend
+npm install
+ng serve --proxy-config proxy.conf.json
+```
+
+L'aplicació estarà disponible a `http://localhost:4200`.
+El proxy redirigeix les peticions `/api/*` al backend (`http://localhost:8080`).
+
+### Swagger UI
+
+Documentació interactiva de l'API disponible a:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+## 🔑 Credencials de Prova
+
+### Base de Dades
+
+| Camp | Valor |
+|---|---|
+| Host | `localhost:5432` |
+| Base de dades | `scena_db` |
+| Usuari | `scena_user` |
+| Password | `scena_pass` |
+
+### Usuari de Prova (registrar manualment)
+
+L'aplicació no inclou dades seed. Per provar, registra un usuari des de la interfície:
+
+1. Accedeix a `http://localhost:4200`
+2. Clica "Registrar-se"
+3. Introdueix nom, email i password (mínim 6 caràcters)
+4. Fes login amb les credencials creades
+
+---
+
+## 🛠 Tecnologies Utilitzades
+
+| Capa | Tecnologia |
+|---|---|
+| Frontend | Angular 19 + TypeScript |
+| Estils | Bootstrap 5 + SCSS |
+| Backend | Spring Boot 3.4.2 + Java 21 |
+| Base de Dades | PostgreSQL |
+| Autenticació | JWT (jjwt 0.11.5) |
+| Mapes | Leaflet |
+| Documentació API | Swagger (springdoc-openapi 2.3.0) |
+| Contenidors | Docker + Docker Compose |
 
 
 
